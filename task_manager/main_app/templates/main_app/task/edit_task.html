@@ -1,0 +1,185 @@
+{% extends 'main_app/base.html' %}
+{% load form_tags %}
+{% load static %}
+
+{% block title %}
+    Edit Task
+{% endblock title %}
+
+{% block page_header_title %}
+    {% if task.project %}
+        Edit Task: {{ task.title }} (Project: {{ task.project.name }})
+    {% else %}
+        Edit Task: {{ task.title }}
+    {% endif %}
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    {% if task.project %}
+        {% if task.project.folder %}
+            <a href="{% url 'folder_projects' task.project.folder.slug %}" class="breadcrumb-item">{{task.project.folder}}</a>
+        {% endif %}
+        <a href="{% url 'project_tasks' task.project.slug %}" class="breadcrumb-item">{{ task.project }}</a>
+    {% endif %}
+    <a href="{% url 'task_detail' task.slug %}" class="breadcrumb-item">{{ task }}</a>
+    <a href="" class="breadcrumb-item">Edit</a>
+{% endblock breadcrumb %}
+
+
+{% block content_area %}
+    <div class="card">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="row mb-2">
+                    <div class="col-lg-12">
+                        <label class="form-label"><b>Task Title:</b></label>
+                        {{ task_form.title }}
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-lg-12">
+                        <label class="form-label"><b>Description:</b></label>
+                        {{ task_form.description }}
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Deadline:</b>
+                        <span class="form-text">'dd.mm.yyyy' in range [01.01.1990, 01.01.2030]</span></label>
+                        {{ task_form.deadline }}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Status:</b></label>
+                        {{ task_form.status }}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Priority:</b></label>
+                        {{ task_form.priority }}
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Members:</b></label>
+                        {{ task_form.members }}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Project:</b></label>
+                        {{ task_form.project }}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Assignee:</b></label>
+                        {{ task_form.assignee }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-8">
+                        <div class="mb-2">
+                            <label for="id_file" class="form-label">Upload files</label>
+                            <input type="file" name="file" id="id_file" class="form-control" multiple>
+                        </div>
+                        <ul id="file-list" class="list-group"></ul>
+                        <!-- Скрытое поле для хранения информации о загруженных файлах -->
+                        <input type="hidden" id="uploaded-files" name="uploaded_files" value="[]">
+                        <ul id="file-list" class="list-group"></ul>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="col d-flex align-items-center">
+                            <a href="{% url 'task_detail' task.slug %}">
+                                <button type="button" class="btn btn-secondary">Back to task</button>
+                            </a>
+                            <button name="submit_button" type="submit" class="btn btn-primary ms-auto">
+                                Submit <i class="ph-paper-plane-tilt ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="fw-semibold">Attached files</span>
+            {% if task_files|length > 2 %}
+                <button id="toggle-files-btn" class="btn btn-link text-decoration-none float-end" type="button">
+                    Show More
+                </button>
+            {% endif %}
+        </div>
+    
+        <div id="attached-files-container" class="card-body">
+            {% for task_file in task.task_files.all|dictsortreversed:"id" %}
+                <div class="d-flex align-items-start mb-4 border-bottom file-item">
+                    <div class="flex-fill">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <!-- Левый элемент -->
+                            <div class="fw-semibold text-wrap">
+                                <a href="{{ task_file.file_path }}" target="_blank" id="downloadBackBlaze">{{ task_file.name }}</a>
+                            </div>
+                            <!-- Центральный элемент -->
+                            <div class="text-muted mx-auto">
+                                {{ task_file.uploaded_at|date:"Y-m-d H:i" }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ms-3">
+                        <a href="{% url 'user_tasks' task_file.author.username %}">{{task_file.author.username}}</a>
+                        <span class="text-muted">{{ task_file.size|size_to_mb|floatformat:2 }} Mb</span>
+                    </div>
+                    <form method="post" action="{% url 'delete_task_file' task_file.id %}" onsubmit="return confirm('Are you sure you want to delete file - {{task_file.name}}?');">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item">
+                            <i class="ph-x text-danger ms-2"></i>
+                        </button>
+                    </form>
+                </div>
+            {% empty %}
+                -
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggleButton = document.getElementById("toggle-files-btn");
+            if (toggleButton) {  // Убедимся, что кнопка существует
+                const fileItems = document.querySelectorAll(".file-item");
+    
+                toggleButton.addEventListener("click", function () {
+                    const isCollapsed = toggleButton.textContent.trim() === "Show More";
+    
+                    fileItems.forEach((item, index) => {
+                        if (index >= 2) {
+                            item.classList.toggle("d-none", !isCollapsed);
+                        }
+                    });
+    
+                    toggleButton.textContent = isCollapsed ? "Show Less" : "Show More";
+                });
+            }
+        });
+    </script>
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/forms/form_multiselect.js' %}"></script>
+    <script src="{% static 'main_app/js/forms/bootstrap_multiselect.js' %}"></script>
+
+    <script src="{% static 'main_app/js/forms/ckeditor_classic.js' %}"></script>
+    <script src="{% static 'main_app/js/forms/editor_ckeditor_classic.js' %}"></script>
+
+    <script src="{% static 'main_app/js/fetch_scripts/upload_task_files.js' %}"></script>
+{% endblock import_js %}

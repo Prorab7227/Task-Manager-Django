@@ -1,0 +1,128 @@
+<table class="table tasks-list">
+    <thead>
+        <tr>
+            <th>Folder</th>
+            <th>Project</th>
+            <th>Client</th>
+            <th>Assignee</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Members</th>
+            <th>Owner</th>
+            <th>Deadline</th>
+            <th>Modified</th>
+            <th>Created</th>
+            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for item in projects %}
+            <tr>
+                <td>
+                    {% if item.folder.slug %}
+                        <div class="fw-semibold"><a href="{% url 'folder_projects' item.folder.slug %}">{{ item.folder|truncatechars:25 }}</a></div>
+                    {% elif item.parent_folder.slug %}
+                        <div class="fw-semibold"><a href="{% url 'folder_projects' item.parent_folder.slug %}">{{ item.parent_folder|truncatechars:25 }}</a></div>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    <div class="d-flex gap-2 align-items-center">
+                        {% if item.type == 'subfolder' %}
+                            <i class="ph-folder"></i>
+                        {% elif item.type == 'project' %}
+                            <i class="ph-article"></i>
+                        {% endif %}
+                        <div class="fw-semibold">
+                            {% if item.type == 'subfolder' %}
+                                <a href="{% url "folder_projects" item.slug %}">
+                                    {{ item.name|truncatechars:25 }}
+                                </a>
+                            {% elif item.type == 'project' %}
+                                <a href="{% url "project_tasks" item.slug %}">
+                                    {{ item.name|truncatechars:25 }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </td>
+    
+                <td>
+                    <a href="{% url 'client_projects' item.client %}">{{ item.client|default:"-" }}</a>
+                </td>
+
+                <td>
+                    {% if item.assignee %}
+                        <a href="{% url 'user_tasks' item.assignee %}">{{ item.assignee }}</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% include 'main_app/templates/status_dropdown.html' with act_item=item %}
+                </td>
+
+                <td>
+                    {% include 'main_app/templates/priority_dropdown.html' with act_item=item %}
+                </td>
+    
+                <td>
+                    {% if item.members.exists %}
+                        {% for user in item.members.all|slice:":2" %}
+                            <a href="{% url 'user_tasks' user.username %}">{{ user.username }}{% if not forloop.last %}, {% endif %}</a>
+                        {% endfor %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    <a href="{% url 'user_tasks' item.owner %}">{{ item.owner }}</a>
+                </td>
+    
+                <td>
+                    {{ item.deadline|date:"d.m.Y"|default:"-" }}
+                </td>
+
+                <td>
+                    {{ item.last_modified|date:"d.m.Y" }}
+                </td>
+    
+                <td>
+                    {{ item.created|date:"d.m.Y"|default:"-" }}
+                </td>
+                
+                <td class="text-center">
+                    <div class="dropdown">
+                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                            <i class="ph-list"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            {% if item.type == 'subfolder' %}
+                                <a href="{% url 'edit_folder' item.slug %}" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit folder</a>
+                                <form method="post" action="{% url 'delete_folder' item.slug %}" onsubmit="return confirm('Are you sure you want to delete project - {{item}}?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="ph-x me-2"></i>Remove
+                                    </button>
+                                </form>
+                            {% elif item.type == 'project' %}
+                                <a href="{% url 'edit_project' item.slug %}" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit project</a>
+                                <form method="post" action="{% url 'delete_project' item.slug %}" onsubmit="return confirm('Are you sure you want to delete project - {{item}}?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="ph-x me-2"></i>Remove
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

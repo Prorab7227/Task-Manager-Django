@@ -1,0 +1,54 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+	{{user.username}} Projects
+{% endblock title %}
+
+{% block page_header_title %}
+	{{user.username}} Projects
+{% endblock page_header_title %}
+
+{% block sub_users %}
+	<ul class="nav-group-sub collapse {% if '/user/' in request.path %}show{% endif %}">
+		<li class="nav-item">
+			<a href="{% url 'user_tasks' user.username %}" class="nav-link">
+				<i class="ph-kanban"></i>
+				Tasks
+			</a>
+		</li>
+		<li class="nav-item">
+			<a href="{% url 'user_projects_2' user.username %}" class="nav-link">
+				<i class="ph-article"></i>
+				Projects
+			</a>
+		</li>
+		<li class="nav-item">
+			<a href="{% url 'user_projects_1' user.username %}" class="nav-link">
+				<i class="ph-chart-line"></i>
+				Statistics
+			</a>
+		</li>
+	</ul>
+{% endblock sub_users %}
+
+{% block add_some %}
+	<a href="{% url 'create_task' %}?user={{ user.id }}" class="btn btn-success ms-2">
+		Add task to user
+	</a>
+{% endblock add_some %}
+
+{% block content_area %}
+	<div class="card rounded-0">
+		{% include 'main_app/project/project_table_template.html' with projects=projects %}
+	</div>
+{% endblock content_area %}
+
+{% block import_js %}
+	<script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+	<script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+{% endblock import_js %}

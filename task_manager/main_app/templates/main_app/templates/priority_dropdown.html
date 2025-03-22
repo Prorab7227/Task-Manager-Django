@@ -1,0 +1,67 @@
+{% include 'main_app/templates/priority_badge.html' with act_item=item %}
+
+<div id="priority-dropdown-{{ act_item.id }}" class="dropdown-menu" style="display: none; position: absolute; z-index: 1000; width: auto; margin-top: 5px;">
+    <a href="#" class="dropdown-item" onclick="selectPriority({{ act_item.id }}, 'low', '{{ item.type }}')">
+        <i class="ph-battery-low me-2"></i>
+        <span class="badge bg-success bg-opacity-20 text-success me-3">Low</span>
+    </a>
+    <a href="#" class="dropdown-item" onclick="selectPriority({{ act_item.id }}, 'regular', '{{ item.type }}')">
+        <i class="ph-battery-medium me-2"></i>
+        <span class="badge bg-info bg-opacity-20 text-info me-3">Regular</span>
+    </a>
+    <a href="#" class="dropdown-item" onclick="selectPriority({{ act_item.id }}, 'high', '{{ item.type }}')">
+        <i class="ph-battery-full me-2"></i>
+        <span class="badge bg-danger bg-opacity-20 text-danger me-3">High</span>
+    </a>
+</div>
+
+<script>
+    function togglePriorityDropdown(act_itemId) {
+        var dropdown = document.getElementById("priority-dropdown-" + act_itemId);
+        var currentPriority = document.getElementById("priority-display-" + act_itemId);
+
+        // Toggle visibility of the dropdown
+        dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!currentPriority.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = "none";
+            }
+        });
+    }
+
+    function selectPriority(act_itemId, newPriority, type) {
+        var url = type === 'project' 
+            ? "{% url 'project_update_priority' 0 %}".replace('0', act_itemId) 
+            : "{% url 'folder_update_priority' 0 %}".replace('0', act_itemId);
+
+        // Send AJAX request to update the priority
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {
+                'priority': newPriority,
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            success: function(response) {
+                // Update the displayed priority text and badge class
+                var priorityDisplay = document.getElementById("priority-display-" + act_itemId);
+                priorityDisplay.innerHTML = newPriority.charAt(0).toUpperCase() + newPriority.slice(1);
+                priorityDisplay.className = "badge " + getPriorityClass(newPriority);
+
+                var dropdown = document.getElementById("priority-dropdown-" + act_itemId);
+                dropdown.style.display = "none";
+            }
+        });
+    }
+
+    function getPriorityClass(priority) {
+        switch(priority) {
+            case 'low': return 'bg-success bg-opacity-20 text-success';
+            case 'regular': return 'bg-info bg-opacity-20 text-info';
+            case 'high': return 'bg-danger bg-opacity-20 text-danger';
+            default: return 'bg-secondary bg-opacity-20 text-secondary';
+        }
+    }
+</script>

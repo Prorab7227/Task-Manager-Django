@@ -1,0 +1,17 @@
+{% if action_type == "create" %}
+    <div class="bg-success bg-opacity-10 text-success lh-1 rounded-pill p-2">
+        <i class="ph-file-plus"></i>                              
+    </div>
+{% elif action_type == "update" %}
+    <div class="bg-primary bg-opacity-10 text-primary lh-1 rounded-pill p-2">
+        <i class="ph-arrows-clockwise"></i>           
+    </div>
+{% elif action_type == "delete" %}
+    <div class="bg-danger bg-opacity-10 text-danger lh-1 rounded-pill p-2">
+        <i class="ph-file-x"></i>
+    </div>
+{% else %}
+    <div class="bg-secondary bg-opacity-10 text-secondary lh-1 rounded-pill p-2">
+        <i class="ph-question-mark"></i>                              
+    </div>
+{% endif %}

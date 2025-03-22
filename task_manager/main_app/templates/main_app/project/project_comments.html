@@ -1,0 +1,233 @@
+{% extends 'main_app/base.html' %}
+{% load form_tags %}
+{% load static %}
+
+{% block title %}
+    Project {{ project.name }}
+{% endblock title %}
+
+{% block page_header_title %}
+    Project {{ project.name }}
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    {% if project.folder %}
+        <a href="{% url 'folder_projects' project.folder.slug %}" class="breadcrumb-item">{{ project.folder }}</a>
+    {% endif %}
+    <a href="{% url 'project_tasks' project.slug %}" class="breadcrumb-item">{{ project }}</a>
+{% endblock breadcrumb %}
+
+{% block content_area %}
+
+    <div class="card rounded-0">
+        <div class="card-header">
+            <a href="{% url 'project_tasks' project.slug %}" class="me-3">
+                <button class="btn btn-outline-secondary">Tasks</button>
+            </a>
+            
+            <a href="{% url 'project_detail' project.slug %}" class="me-3">
+                <button class="btn btn-outline-secondary">Project info</button>
+            </a>
+        
+            <a href="{% url 'project_tasks_files' project.slug %}">
+                <button class="btn btn-outline-secondary me-3">Files</button>
+            </a>
+
+            <a href="#">
+                <button class="btn btn-success me-3">Comments</button>
+            </a>
+
+            <a href="{% url 'project_reports' project.slug %}">
+                <button class="btn btn-outline-secondary me-3">Reports</button>
+            </a>
+        </div>
+
+        <div class="card-body">
+
+            <form id="file-upload-form" enctype="multipart/form-data" method="post" action="{% url 'project_comments' project.slug %}" novalidate>
+                {% csrf_token %}
+                <div class="mb-2">
+                    {{ comment_form.text }}
+                </div>
+
+                <div class="mb-2">
+                    <div class="mb-2">
+                        <label for="id_file" class="form-label">Upload files</label>
+                        <input type="file" name="file" id="id_file" class="form-control" multiple>
+                    </div>
+                    <ul id="file-list" class="list-group"></ul>
+                    <!-- Скрытое поле для хранения информации о загруженных файлах -->
+                    <input type="hidden" id="uploaded-files" name="uploaded_files" value="[]">
+                </div>
+
+                <div class="d-flex">
+                    <button type="submit" class="btn btn-primary ms-auto">
+                        Submit
+                        <i class="ph-paper-plane-tilt ms-2"></i>
+                    </button>
+                </div>
+            </form>
+
+            {% if comment_form.errors %}
+                <div class="alert alert-danger mt-3">
+                    {% for field, errors in comment_form.errors.items %}
+                        <strong>{{ field }}:</strong>
+                        <ul>
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for comment in project_comments %}
+                <div class="d-flex flex-column flex-lg-row mb-3">
+                    <div class="me-lg-3 mb-2 mb-lg-0">
+                        <a href="#">
+                            <img src="{% static 'main_app/img/users/face24.jpg' %}" width="40" height="40" alt="">
+                        </a>
+                    </div>
+
+                    <div class="flex-fill">
+                        <a href="{% url 'user_tasks' comment.author.username %}" class="fw-semibold">{{ comment.author.username }}</a>
+                        <span class="fs-sm text-muted ms-3">{{ comment.created|timesince }} ago</span>
+
+                        <p>{{ comment.text|safe }}</p>
+
+                        <ul class="list-inline mb-0">
+                            <li class="list-inline-item d-inline-flex align-items-center">
+                                <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>
+                                0
+                            </li>
+                            <li class="list-inline-item">
+                                <form method="post" action="{% url 'project_comments' project_slug=project.slug %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="" value="{{ comment.id }}">
+                                    <button type="submit" class="btn btn-link text-primary p-0">Reply</button>
+                                </form>
+                            </li>
+                            <li class="list-inline-item">
+                                <form method="post" action="{% url 'project_comments' project_slug=project.slug %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="" value="{{ comment.id }}">
+                                    <button type="submit" class="btn btn-link text-primary p-0">Edit</button>
+                                </form>
+                            </li>
+                            <li class="list-inline-item">
+                                <form method="post" action="{% url 'project_comments' project_slug=project.slug %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="delete_comment_id" value="{{ comment.id }}">
+                                    <button type="submit" class="btn btn-link text-primary p-0" onclick="return confirm('Are you sure you want to delete this comment?');">Delete</button>
+                                </form>
+                            </li>
+                        </ul>
+
+                        {% if comment.project_comment_files.all %}
+                            <div class="card mt-2">
+                                <div class="card-header">
+                                    <span class="fw-semibold">Attached files</span>
+                                    {% if comment.project_comment_files.all|length > 2 %}
+                                        <button class="btn btn-link text-decoration-none float-end toggle-files-btn"
+                                            type="button"
+                                            data-comment-id="{{ comment.id }}">
+                                            Show More
+                                        </button>
+                                    {% endif %}
+                                </div>
+
+                                <div class="card-body attached-files-container" data-comment-id="{{ comment.id }}">
+                                    {% for comment_file in comment.project_comment_files.all %}
+                                        <div class="d-flex align-items-start mb-4 border-bottom file-item {% if forloop.counter > 2 %}d-none{% endif %}">
+                                            <div class="flex-fill">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="fw-semibold text-wrap">
+                                                        <a href="{{ comment_file.file_path }}" target="_blank">{{ comment_file.name }}</a>
+                                                    </div>
+                                                    <div class="text-muted mx-auto">
+                                                        {{ comment_file.uploaded_at|date:"Y-m-d H:i" }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ms-3">
+                                                <a href="{% url 'user_tasks' comment_file.author.username %}">{{comment_file.author.username}}</a>
+                                                <span class="text-muted">{{ comment_file.size|size_to_mb|floatformat:2 }} Mb</span>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Вложенные ответы -->
+                        <div class="replies ms-4">
+                            {% for reply in comment.replied_for.all %}
+                            <div class="d-flex flex-column flex-lg-row mb-3">
+                                <div class="me-lg-3 mb-2 mb-lg-0">
+                                    <a href="#">
+                                        <img src="{{ reply.author.profile.avatar_url|default:'/path/to/default-avatar.jpg' }}" class="rounded-circle" width="40" height="40" alt="">
+                                    </a>
+                                </div>
+
+                                <div class="flex-fill">
+                                    <a href="#" class="fw-semibold">{{ reply.author.username }}</a>
+                                    <span class="fs-sm text-muted ms-3">{{ reply.created|timesince }} ago</span>
+
+                                    <p>{{ reply.text }}</p>
+
+                                    <ul class="list-inline mb-0">
+                                        <li class="list-inline-item d-inline-flex align-items-center">
+                                            <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>
+                                            0
+                                        </li>
+                                        <li class="list-inline-item ms-2">
+                                            <a href="#">Reply</a>
+                                        </li>
+                                        <li class="list-inline-item">
+                                            <a href="#">Edit</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% if not forloop.last %}<hr>{% endif %}
+            {% empty %}
+                <p>No comments available for this project.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".toggle-files-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    const commentId = this.getAttribute("data-comment-id");
+                    const container = document.querySelector(`.attached-files-container[data-comment-id="${commentId}"]`);
+                    const fileItems = container.querySelectorAll(".file-item");
+        
+                    const isCollapsed = this.textContent.trim() === "Show More";
+        
+                    fileItems.forEach((item, index) => {
+                        if (index >= 2) {
+                            item.classList.toggle("d-none", !isCollapsed);
+                        }
+                    });
+        
+                    this.textContent = isCollapsed ? "Show Less" : "Show More";
+                });
+            });
+        });
+    </script>
+
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/forms/ckeditor_classic.js' %}"></script>
+    <script src="{% static 'main_app/js/forms/editor_ckeditor_classic.js' %}"></script>
+
+    <script src="{% static 'main_app/js/fetch_scripts/download_from_backblaze.js' %}"></script>
+    <script src="{% static 'main_app/js/fetch_scripts/upload_files_project_comment.js' %}"></script>
+{% endblock import_js %}

@@ -1,0 +1,46 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Create Tag
+{% endblock title %}
+
+{% block page_header_title %}
+    Create Tag
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    <a href="#" class="breadcrumb-item">Create Tag</a>
+{% endblock breadcrumb %}
+
+{% block content_area %}
+
+    <div class="card rounded-0">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                <div class="row mb-3">
+                    <div class="col-lg-12">
+                        <div>
+                            <label class="form-label"><b>Name:</b></label>
+                            {{ tag_form.name }}
+                            {% if tag_form.name.errors %}
+                                <div class="text-danger">
+                                    {% for error in tag_form.name.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Create Tag <i class="ph-paper-plane-tilt ms-2"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock content_area %}

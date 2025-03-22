@@ -1,0 +1,86 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Folder {{ folder }}
+{% endblock title %}
+
+{% block page_header_title %}
+    Folder {{ folder }}
+{% endblock page_header_title %}
+
+{% block user_in_project %}
+
+    {% if folder.assigned_users.all %}
+        {% for user in folder.assigned_users.all %}
+            <a href="{% url 'user_tasks' user.id %}">{{ user.username }}</a>
+            {% if not forloop.last %}&nbsp;{% endif %}
+        {% empty %}
+            <p>No assigned users</p>
+        {% endfor %}
+    {% endif %}
+
+{% endblock user_in_project %}
+
+{% block breadcrumb %}
+  <a href="{% url 'folder_list' %}" class="breadcrumb-item">Folders</a>
+  <a href="{% url 'folder_projects' folder.slug %}" class="breadcrumb-item">{{ folder }}</a>
+  <a href="#" class="breadcrumb-item">Projects</a>
+{% endblock breadcrumb %}
+
+{% block add_some %}
+    {% if not folder.parent_folder %}
+        <a href="{% url 'create_folder' %}?parentfolder={{folder.slug}}" class="btn btn-success btn-icon w-135px h-32px ms-2">
+            <span class="me-1">Add subfolder</span>
+            <i class="ph-plus"></i>
+        </a>
+    {% endif %}
+
+    {% if folder.parent_folder %}
+        <a href="{% url 'create_project' %}?folder={{folder.parent_folder.slug}}&subfolder={{folder.slug}}" class="btn btn-success btn-icon w-135px h-32px ms-2">
+            <span class="me-1">Add project</span>
+            <i class="ph-plus"></i>
+        </a>
+    {% else %}
+        <a href="{% url 'create_project' %}?folder={{folder.slug}}" class="btn btn-success btn-icon w-135px h-32px ms-2">
+            <span class="me-1">Add project</span>
+            <i class="ph-plus"></i>
+        </a>
+    {% endif %}
+{% endblock add_some %}
+
+
+{% block content_area %}
+
+    <div class="card rounded-0">
+
+        <div class="card-header">
+            
+            <a href="#" class="me-3">
+                <button class="btn btn-success">Projects</button>
+            </a>
+
+            <a href="{% url 'folder_detail' folder.slug %}" class="me-3">
+                <button class="btn btn-outline-secondary">Folder info</button>
+            </a>
+
+            <a href="{% url 'folder_projects_files' folder.slug %}">
+                <button id="files-btn" class="btn btn-outline-secondary">Files</button>
+            </a>
+            
+        </div>
+
+        {% include 'main_app/project/project_table_template.html' with projects=projects %}
+    </div>
+    
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+
+    <script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+    <script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+
+    <script src="{% static 'main_app/js/index_js/custom_type.js' %}"></script>
+    <script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+{% endblock import_js %}

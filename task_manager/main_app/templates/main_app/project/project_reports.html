@@ -1,0 +1,63 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block title %}
+    Project {{ project.name }}
+{% endblock title %}
+
+{% block page_header_title %}
+    Project {{ project.name }}
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    {% if project.folder %}
+        <a href="{% url 'folder_projects' project.folder.slug %}" class="breadcrumb-item">{{ project.folder }}</a>
+    {% endif %}
+    <a href="{% url 'project_tasks' project.slug %}" class="breadcrumb-item">{{ project }}</a>
+{% endblock breadcrumb %}
+
+{% block content_area %}
+
+    <div class="card rounded-0">
+        <div class="card-header">
+            <a href="{% url 'project_tasks' project.slug %}" class="me-3">
+                <button class="btn btn-outline-secondary">Tasks</button>
+            </a>
+            
+            <a href="{% url 'project_detail' project.slug %}" class="me-3">
+                <button class="btn btn-outline-secondary">Project info</button>
+            </a>
+        
+            <a href="{% url 'project_tasks_files' project.slug %}">
+                <button class="btn btn-outline-secondary me-3">Files</button>
+            </a>
+
+            <a href="{% url 'project_comments' project.slug %}">
+                <button class="btn btn-outline-secondary me-3">Comments</button>
+            </a>
+
+            <a href="#">
+                <button class="btn btn-success me-3">Reports</button>
+            </a>
+            
+            <a href="{% url 'project_create_report' %}?project_slug={{project.slug}}">
+                <button class="btn btn-success float-end">Create Report</button>
+            </a>
+        </div>
+
+        {% include 'main_app/project/reports_table_template.html' with items=project_reports %}
+    </div>
+
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+
+    <script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+	<script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+
+    <script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+
+    <script src="{% static 'main_app/js/fetch_scripts/download_from_backblaze.js' %}"></script>
+{% endblock import_js %}

@@ -1,0 +1,34 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Tags
+{% endblock title %}
+
+{% block page_header_title %}
+  Tags
+{% endblock page_header_title %}
+
+{% block add_some %}
+	<a href="{% url "create_tag" %}" class="btn btn-success btn-icon w-135px h-32px ms-2">
+		<span class="me-1">Create Tag</span>
+		<i class="ph-plus"></i>
+	</a>
+{% endblock add_some %}
+
+{% block content_area %}
+
+    <div class="card">
+        {% include "main_app/tag/tag_table_template.html" %}
+    </div>
+
+{% endblock content_area %}
+
+{% block import_js %}    
+    <script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+	<script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+{% endblock import_js %}

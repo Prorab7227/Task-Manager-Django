@@ -1,0 +1,84 @@
+<table class="table tasks-list">
+    <thead>
+        <tr>
+            <th>Folder</th>
+            <th>Client</th>
+            <th>Project</th>
+            <th>Task</th>
+            <th>Assignee</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Deadline</th>
+            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for item in tasks %}
+            <tr>
+
+                <td>
+                    {% if item.project.folder %}
+                        <div class="fw-semibold"><a href="{% url "folder_projects" item.project.folder.slug %}">{{ item.project.folder }}</a></div>
+                    {% else %}
+                        <div class="fw-semibold">-</div>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {{ item.project.client|default:"-" }}
+                </td>
+
+                <td>
+                    {% if item.project %}
+                        <div class="fw-semibold"><a href="{% url "project_tasks" item.project.slug %}">{{ item.project }}</a></div>
+                    {% else %}
+                        <div class="fw-semibold">-</div>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <div class="fw-semibold"><a href="{% url "task_detail" item.slug %}">{{ item.title }}</a></div>
+                </td>
+
+                <td>
+                    {% if item.assignee %}
+                        <a href="{% url 'user_tasks' item.assignee.username %}">{{ item.assignee }}</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>                
+                    {% include 'main_app/templates/task/task_status_dropdown.html' with act_item=item %}
+                </td>
+
+                <td>                
+                    {% include 'main_app/templates/task/task_priority_dropdown.html' with act_item=item %}
+                </td>
+
+                <td>
+                    {{ item.deadline|date:"d.m.Y"|default:"-" }}
+                </td>
+                
+                <td class="text-center">
+                    <div class="dropdown">
+                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                            <i class="ph-list"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            {% comment %} <div class="dropdown-divider"></div> {% endcomment %}
+                            <a href="{% url 'edit_task' item.slug %}" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>
+                            <form method="post" action="{% url 'delete_task' item.slug %}" onsubmit="return confirm('Are you sure you want to delete task - {{item}}?');">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item">
+                                    <i class="ph-x me-2"></i>Remove
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

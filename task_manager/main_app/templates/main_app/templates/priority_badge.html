@@ -1,0 +1,13 @@
+<span class="badge link-primary pe-auto
+    {% if act_item.priority == 'low' %}
+        bg-success bg-opacity-20 text-success
+    {% elif act_item.priority == 'regular' %}
+        bg-info bg-opacity-20 text-info
+    {% elif act_item.priority == 'high' %}
+        bg-danger bg-opacity-20 text-danger
+    {% else %}
+        bg-secondary bg-opacity-20 text-secondary
+    {% endif %}
+    " id="priority-display-{{ act_item.id }}" onclick="togglePriorityDropdown({{ act_item.id }})">
+    {{ act_item.priority|title }}
+</span>

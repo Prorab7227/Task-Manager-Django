@@ -1,0 +1,100 @@
+{% extends "main_app/base.html" %}
+{% load static %}
+
+{% block title %}
+    Companies
+{% endblock title %}
+
+{% block page_header_title %}
+    Companies
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+  <a href="#" class="breadcrumb-item">Companies</a>
+{% endblock breadcrumb %}
+
+
+{% block content_area %}
+
+    <div class="card rounded-0">
+
+        <table class="table tasks-list">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Owner</th>
+                    <th>Assignee</th>
+                    <th>Members</th>
+                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for company in company_list %}
+                    <tr>
+
+                        <td>
+                            <a href="#">{{ company }}</a>
+                        </td>
+
+                        <td>
+                            {{ company.description|default:"-" }}
+                        </td>
+
+                        <td>
+                            <a href="{% url 'user_tasks' company.owner.username %}">{{ company.owner }}</a>
+                        </td>
+
+                        <td>
+                            {% if company.assignee %}
+                                <a href="{% url 'user_tasks' company.assignee.username %}">{{ company.assignee }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if company.members %}
+                                {% for member in company.members.all %}
+                                    <a href="{% url 'user_tasks' member.username %}">{{ member }}</a>
+                                {% endfor %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td class="text-center">
+                            <div class="dropdown">
+                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                    <i class="ph-list"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit company</a>
+                                    <form method="post" action="#" onsubmit="return confirm('Are you sure you want to delete task - {{company}}?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="ph-x me-2"></i>Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+    <script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+	<script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+
+    <script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+    <script src="{% static 'main_app/js/index_js/custom_type.js' %}"></script>
+{% endblock import_js %}

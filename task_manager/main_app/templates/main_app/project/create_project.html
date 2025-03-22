@@ -1,0 +1,216 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Create Project
+{% endblock title %}
+
+{% block page_header_title %}
+    {% if folder %}
+        Add project to folder {{folder.name}}
+    {% else %}
+        Create Project
+    {% endif %}
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    {% if folder %}
+        <a href="{% url 'folder_list' %}" class="breadcrumb-item">Folders</a>
+        <a href="{% url 'folder_projects' folder.slug %}" class="breadcrumb-item">{{ folder }}</a>
+        <a href="#" class="breadcrumb-item">Add Project</a>
+    {% else %}
+        <a href="{% url 'project_list' %}" class="breadcrumb-item">Projects</a>
+        <a href="#" class="breadcrumb-item">Create project</a>
+    {% endif %}
+{% endblock breadcrumb %}
+
+{% block content_area %}
+
+    <div class="card rounded-0">
+
+        <div class="card-body">
+            
+            <form method="post" novalidate>
+                
+                {% csrf_token %}
+
+                <div class="row mb-3">
+
+                    <div class="col-lg-12">
+                        <div>
+                            <label class="form-label"><b>Project Name:</b></label>
+                            {{ form.name }}
+
+                            {% if form.name.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.name.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-12">
+                        <label class="form-label"><b>Project Description:</b></label>
+                        {{ form.description }}
+
+                        {% if form.description.errors %}
+                            <div class="text-danger">
+                                {% for error in form.description.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Deadline:</b><span class="form-text"> 'dd.mm.yyyy' in range [01.01.1990, 01.01.2030]</span></label>
+                        {{ form.deadline }}
+
+                        {% if form.deadline.errors %}
+                            <div class="text-danger">
+                                {% for error in form.deadline.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Priority:</b></label>
+                        {{ form.priority }}
+
+                        {% if form.priority.errors %}
+                            <div class="text-danger">
+                                {% for error in form.priority.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Status:</b></label>
+                        {{ form.status }}
+
+                        {% if form.status.errors %}
+                            <div class="text-danger">
+                                {% for error in form.status.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Folder:</b></label>
+                        {{ form.folder }}
+
+                        {% if form.folder.errors %}
+                            <div class="text-danger">
+                                {% for error in form.folder.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Subfolder:</b></label>
+                        {{ form.subfolder }}
+
+                        {% if form.subfolder.errors %}
+                            <div class="text-danger">
+                                {% for error in form.subfolder.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Client:</b></label>
+                        {{ form.client }}
+
+                        {% if form.client.errors %}
+                            <div class="text-danger">
+                                {% for error in form.client.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Members:</b></label>
+                        {{form.members}}
+
+                        {% if form.members.errors %}
+                            <div class="text-danger">
+                                {% for error in form.members.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Assignee:</b></label>
+                        {{ form.assignee }}
+                        
+                        {% if form.assignee.errors %}
+                            <div class="text-danger">
+                                {% for error in form.assignee.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Tag:</b></label>
+                        {{ form.tag }}
+                        
+                        {% if form.tag.errors %}
+                            <div class="text-danger">
+                                {% for error in form.tag.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Create Project <i class="ph-paper-plane-tilt ms-2"></i></button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/forms/form_multiselect.js' %}"></script>
+    <script src="{% static 'main_app/js/forms/bootstrap_multiselect.js' %}"></script>
+
+    <script src="{% static 'main_app/js/forms/ckeditor_classic.js' %}"></script>
+    <script src="{% static 'main_app/js/forms/editor_ckeditor_classic.js' %}"></script>
+{% endblock import_js %}

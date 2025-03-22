@@ -1,0 +1,326 @@
+{% extends 'main_app/base.html' %}
+{% load form_tags %}
+{% load static %}
+
+{% block title %}
+    Task detail - {{ task.title }}
+{% endblock title %}
+
+{% block page_header_title %}
+    {{ task.title }}
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    {% if task.project %}
+        {% if task.project.folder %}
+            <a href="{% url 'folder_projects' task.project.folder.slug %}" class="breadcrumb-item">{{task.project.folder}}</a>
+        {% endif %}
+        <a href="{% url 'project_tasks' task.project.slug %}" class="breadcrumb-item">{{ task.project }}</a>
+    {% endif %}
+    <a href="#" class="breadcrumb-item">{{ task }}</a>
+{% endblock breadcrumb %}
+
+{% block content_area %}
+
+    <!-- Inner container -->
+    <div class="d-flex align-items-stretch align-items-lg-start flex-column flex-lg-row">
+
+        <!-- Left content -->
+        <div class="flex-1 order-2 order-lg-1">
+
+            <div class="card rounded-0">
+                <div class="card-header">
+                    <a href="#" class="me-3">
+                        <button class="btn btn-success">Task info</button>
+                    </a>
+
+                    <a href="{% url 'task_comments' task.slug %}">
+                        <button class="btn btn-outline-secondary me-3">Comments</button>
+                    </a>
+                </div>
+
+                <div class="card-body" style="word-break: break-word; overflow-wrap: break-word;">
+                    <p><strong>Description:</strong> <span>{{ task.description|safe }}</span></p>                         
+                </div>
+
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="fw-semibold">Attached files</span>
+                    {% if task_files|length > 2 %}
+                        <button id="toggle-files-btn" class="btn btn-link text-decoration-none float-end" type="button">
+                            Show More
+                        </button>
+                    {% endif %}
+                </div>
+            
+                <div id="attached-files-container" class="card-body">
+                    {% for task_file in task_files %}
+                        <div class="d-flex align-items-start mb-4 border-bottom file-item {% if forloop.counter > 2 %}d-none{% endif %}">
+                            <div class="flex-fill">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <!-- Левый элемент -->
+                                    <div class="fw-semibold text-wrap">
+                                        <a href="{{ task_file.file_path }}" target="_blank" id="downloadBackBlaze">{{ task_file.name }}</a>
+                                    </div>
+                                    <!-- Центральный элемент -->
+                                    <div class="text-muted mx-auto">
+                                        {{ task_file.uploaded_at|date:"Y-m-d H:i" }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ms-3">
+                                <a href="{% url 'user_tasks' task_file.author.username %}">{{task_file.author.username}}</a>
+                                <span class="text-muted">{{ task_file.size|size_to_mb|floatformat:2 }} Mb</span>
+                            </div>
+                            <form method="post" action="{% url 'delete_task_file' task_file.id %}" onsubmit="return confirm('Are you sure you want to delete file - {{task_file.name}}?');">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item">
+                                    <i class="ph-x text-danger ms-2"></i>
+                                </button>
+                            </form>
+                        </div>
+                    {% empty %}
+                        -
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card rounded-0">
+
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-2">
+                            <label for="id_file" class="form-label">Upload files</label>
+                            <input type="file" name="file" id="id_file" class="form-control" multiple>
+                        </div>
+                        <ul id="file-list" class="list-group"></ul>
+                        <!-- Скрытое поле для хранения информации о загруженных файлах -->
+                        <input type="hidden" id="uploaded-files" name="uploaded_files" value="[]">
+                        <button type="submit" class="btn btn-primary mt-2">Submit <i class="ph-paper-plane-tilt ms-2"></i></button>
+                    </form>
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger mt-3">
+                            {% for field, errors in form.errors.items %}
+                                <strong>{{ field }}:</strong>
+                                <ul>
+                                    {% for error in errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+        <!-- /left content -->
+        
+        <!-- Right sidebar component -->
+        <div class="sidebar sidebar-component sidebar-expand-lg bg-transparent shadow-none order-1 order-lg-2 ms-lg-3 mb-3">
+
+            <!-- Sidebar content -->
+            <div class="sidebar-content">
+
+                <!-- Task timer -->
+                <div class="card">
+                    <div class="sidebar-section-header border-bottom">
+                        <span class="fw-semibold">Task timer</span>
+                    </div>
+
+                    <div class="sidebar-section-body">
+
+                        <div class="d-flex justify-content-center text-center">
+                            <div>
+                                <span class="display-6 lh-1 m-0">-</span>
+                                <div class="mt-2">hours</div>
+                            </div>
+                            <div class="mx-1 my-2">:</div>
+                            <div>
+                                <span class="display-6 lh-1 m-0">-</span>
+                                <div class="mt-2">minutes</div>
+                            </div>
+                            <div class="mx-1 my-2">:</div>
+                            <div>
+                                <span class="display-6 lh-1 m-0">-</span>
+                                <div class="mt-2">seconds</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /task timer -->
+
+                <!-- Task details -->
+                <div class="card">
+                    <div class="sidebar-section-header border-bottom">
+                        <span class="fw-semibold">Task details</span>
+                    </div>
+
+                    <table class="table table-borderless table-xs my-2">
+                        <tbody>
+                            <tr>
+                                <td><i class="ph-briefcase me-2"></i> Project:</td>
+                                {% if task.project %}
+                                    <td><a href="{% url 'project_tasks' task.project.slug %}">{{ task.project|truncatechars:25 }}</a></td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td><i class="ph-folder-user me-2"></i> Owner:</td>
+                                {% if task.owner %}
+                                    <td><a href="{% url 'user_tasks' task.owner.username %}">{{ task.owner }}</a></td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td><i class="ph-folder-user me-2"></i> Assignee:</td>
+                                {% if task.assignee %}
+                                    <td><a href="{% url 'user_tasks' task.assignee.username %}">{{ task.assignee }}</a></td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td><i class="ph-user-circle me-2"></i> Client:</td>
+                                <td>
+                                    {{ task.project.client|default:"-" }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><i class="ph-warning-octagon me-2"></i> Priority:</td>
+                                <td>
+                                    {% include 'main_app/templates/priority_badge.html' with act_item=task %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><i class="ph-check-square-offset me-2"></i> Status:</td>
+                                <td>
+                                    {% include 'main_app/templates/status_badge.html' with act_item=task %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><i class="ph-calendar-x me-2"></i> Deadline:</td>
+                                <td class="text-muted">{{ task.deadline|date:"d.m.Y"|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <td><i class="ph-calendar-check me-2"></i> Modified:</td>
+                                <td class="text-muted">{{ task.last_modified|date:"d.m.Y" }}</td>
+                            </tr>
+                            <tr>
+                                <td><i class="ph-calendar-plus me-2"></i> Created:</td>
+                                <td class="text-muted">{{ task.created|date:"d.m.Y" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="card-footer d-flex align-items-center">
+                        <div class="d-inline-flex">
+                            <a href="{% url 'edit_task' task.slug %}" class="text-body me-2">
+                                <i class="ph-pencil"></i>
+                            </a>
+                            <form method="post" action="{% url 'delete_task' task.slug %}" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link p-0 text-dark">
+                                    <i class="ph-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- /task details -->
+
+                <!-- Assigned users -->
+                <div class="card">
+                    <div class="sidebar-section-header border-bottom">
+                        <span class="fw-semibold">Member users</span>
+                    </div>
+                    <div class="sidebar-section-body">
+                        {% for user in task.members.all %}
+                            <li><a href="{% url 'user_tasks' user.id %}">{{ user.username }}</a></li>
+                        {% empty %}
+                            <li>No assigned users</li>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- /assigned users -->
+                
+            </div>
+            <!-- /sidebar content -->
+
+        </div>
+        <!-- /right sidebar component -->
+
+    </div>
+    <!-- /inner container -->
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggleButton = document.getElementById("toggle-files-btn");
+            if (toggleButton) {  // Убедимся, что кнопка существует
+                const fileItems = document.querySelectorAll(".file-item");
+    
+                toggleButton.addEventListener("click", function () {
+                    const isCollapsed = toggleButton.textContent.trim() === "Show More";
+    
+                    fileItems.forEach((item, index) => {
+                        if (index >= 2) {
+                            item.classList.toggle("d-none", !isCollapsed);
+                        }
+                    });
+    
+                    toggleButton.textContent = isCollapsed ? "Show Less" : "Show More";
+                });
+            }
+        });
+    </script>
+
+    <script>
+        {% if task.deadline %}
+            const deadline = new Date("{{ task.deadline|date:'Y-m-d' }}T00:00:00");
+            
+            function updateTimer() {
+                const now = new Date();
+                const timeRemaining = deadline - now;
+    
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    document.querySelectorAll('.display-6')[0].textContent = "00";
+                    document.querySelectorAll('.display-6')[1].textContent = "00";
+                    document.querySelectorAll('.display-6')[2].textContent = "00";
+                    return;
+                }
+    
+                const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+    
+                // Обновление отображения времени
+                document.querySelectorAll('.display-6')[0].textContent = String(hours).padStart(2, '0');
+                document.querySelectorAll('.display-6')[1].textContent = String(minutes).padStart(2, '0');
+                document.querySelectorAll('.display-6')[2].textContent = String(seconds).padStart(2, '0');
+            }
+    
+            // Обновление таймера каждую секунду
+            const timerInterval = setInterval(updateTimer, 1000);
+    
+            // Начальная загрузка
+            updateTimer();
+        {% else %}
+            document.querySelectorAll('.display-6')[0].textContent = "-";
+            document.querySelectorAll('.display-6')[1].textContent = "-";
+            document.querySelectorAll('.display-6')[2].textContent = "-";
+        {% endif %}
+    </script>
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/fetch_scripts/download_from_backblaze.js' %}"></script>
+    <script src="{% static 'main_app/js/fetch_scripts/upload_task_files.js' %}"></script>
+{% endblock import_js %}

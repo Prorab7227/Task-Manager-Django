@@ -1,0 +1,26 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Tags
+{% endblock title %}
+
+{% block page_header_title %}
+  Tags
+{% endblock page_header_title %}
+
+
+{% block content_area %}
+	<div class="card">
+		{% include 'main_app/project/project_table_template.html' with projects=projects %}
+	</div>
+{% endblock content_area %}
+
+{% block import_js %}    
+    <script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+	<script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+{% endblock import_js %}

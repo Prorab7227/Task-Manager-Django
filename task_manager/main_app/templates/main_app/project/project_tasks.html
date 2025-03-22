@@ -1,0 +1,77 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Project {{ project }}
+{% endblock title %}
+
+{% block page_header_title %}
+    Project {{ project }}
+{% endblock page_header_title %}
+
+{% block user_in_project %}
+
+    {% if project.assigned_users.all %}
+        {% for user in project.assigned_users.all %}
+            <a href="{% url 'user_tasks' user.id %}">{{ user.username }}</a>
+            {% if not forloop.last %}&nbsp;{% endif %}
+        {% empty %}
+            <p>No assigned users</p>
+        {% endfor %}
+    {% endif %}
+
+{% endblock user_in_project %}
+
+{% block breadcrumb %}
+    {% if project.folder %}
+    <a href="{% url 'folder_projects' project.folder.slug %}" class="breadcrumb-item">{{ project.folder }}</a>
+    {% endif %}
+    <a href="{% url 'project_tasks' project.slug %}" class="breadcrumb-item">{{ project }}</a>
+{% endblock breadcrumb %}
+
+{% block add_some %}
+    <a href="{% url 'create_task' project.slug %}" class="btn btn-success btn-icon w-135px h-32px ms-2">
+        <span class="me-1">Add Task</span>
+        <i class="ph-plus"></i>
+    </a>
+{% endblock add_some %}
+
+
+{% block content_area %}
+    <div class="card">
+
+        <div class="card-header">
+            <a href="#" class="me-3">
+                <button class="btn btn-success">Tasks</button>
+            </a>
+            
+            <a href="{% url 'project_detail' project.slug %}" class="me-3">
+                <button class="btn btn-outline-secondary">Project info</button>
+            </a>
+        
+            <a href="{% url 'project_tasks_files' project.slug %}">
+                <button class="btn btn-outline-secondary me-3">Files</button>
+            </a>
+
+            <a href="{% url 'project_comments' project.slug %}">
+                <button class="btn btn-outline-secondary me-3">Comments</button>
+            </a>
+
+            <a href="{% url 'project_reports' project.slug %}">
+                <button class="btn btn-outline-secondary me-3">Reports</button>
+            </a>
+        </div>
+
+        {% include 'main_app/task/task_table_template.html' with tasks=project.tasks.all %}
+    </div>    
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+
+    <script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+	<script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+
+    <script src="{% static 'main_app/js/index_js/custom_type.js' %}"></script>
+    <script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+{% endblock import_js %}

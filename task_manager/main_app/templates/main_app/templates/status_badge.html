@@ -1,0 +1,17 @@
+<span class="badge link-primary pe-auto
+    {% if act_item.status == 'new' %}
+        bg-warning bg-opacity-20 text-warning
+    {% elif act_item.status == 'working' %}
+        bg-info bg-opacity-20 text-info
+    {% elif act_item.status == 'pause' %}
+        bg-dark bg-opacity-20 text-dark
+    {% elif act_item.status == 'done' %}
+        bg-success bg-opacity-20 text-success
+    {% elif act_item.status == 'closed' %}
+        bg-primary bg-opacity-20 text-primary
+    {% elif act_item.status == 'archive' %}
+        bg-secondary bg-opacity-20 text-secondary
+    {% endif %}
+    " id="status-display-{{ act_item.id }}" onclick="toggleDropdown({{ act_item.id }})">
+    {{ act_item.status|title }}
+</span>

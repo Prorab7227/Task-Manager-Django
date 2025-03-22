@@ -1,0 +1,39 @@
+<table class="table tasks-list">
+    <thead>
+        <tr>
+            <th>Tag</th>
+            <th>Projects</th>
+            <th>New</th>
+            <th>Working</th>
+            <th>Pause</th>
+            <th>Closed</th>
+            <th>Archive</th>
+            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tag_info in tag_data %}
+            <tr>
+                <td>
+                    <a href="{% url 'tag_projects' tag_info.slug %}">
+                        {{ tag_info.name|default:"Without tag" }}
+                    </a>
+                </td>
+
+                <td>{{ tag_info.count }}</td>
+                
+                <td>{{ tag_info.new }}</td>
+                
+                <td>{{ tag_info.working }}</td>
+                
+                <td>{{ tag_info.pause }}</td>
+                
+                <td>{{ tag_info.closed }}</td>
+                
+                <td>{{ tag_info.archive }}</td>
+
+                <td></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

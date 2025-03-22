@@ -1,0 +1,217 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Profile
+{% endblock title %}
+
+{% block page_header_title %}
+  Profile
+{% endblock page_header_title %}
+
+
+{% block content_area %}
+
+    <!-- Page content -->
+	<div class="page-content">
+
+		<!-- Main content -->
+		<div class="content-wrapper">
+
+			<div class="card me-3">
+                <table class="table tasks-list">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Folder</th>
+                            <th>Client</th>
+                            <th>Project</th>
+                            <th>New</th>
+                            <th>Working</th>
+                            <th>Pause</th>
+                            <th>Done</th>
+                            <th>Closed</th>
+                            <th class="text-center text-muted" style="width: 30px;">
+                                <i class="ph-check"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for project in projects %}
+                        <tr>
+            
+                        <td>
+                            <div class="d-flex gap-2 align-items-center">
+                            <img src="{% static 'main_app/img/users/face11.jpg' %}" width="36" height="36" class="rounded-pill" alt="">
+                            <div>
+                                {{ user.username }}<br><span class="fs-sm opacity-50">glushka</span>
+                            </div>
+                            </div>
+                        </td>
+            
+                        <td>
+                            {% if project.folder %}
+                            <div class="fw-semibold"><a href="{% url "folder_projects" project.folder.slug %}">{{ project.folder }}</a></div>
+                            {% else %}
+                            <div class="fw-semibold">-</div>
+                            {% endif %}
+                        </td>
+            
+                        <td>
+                            {{ project.client|default:"-" }}
+                        </td>
+            
+                        <td>
+                            {% if project %}
+                            <a href="{% url "project_tasks" project.slug %}" class="fw-semibold">{{ project }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+            
+                        <td>
+                            {{project.task_new}}
+                        </td>
+            
+                        <td>
+                            {{project.task_working}}
+                        </td>
+            
+                        <td>
+                            {{project.task_pause}}
+                        </td>
+            
+                        <td>
+                            {{project.task_done}}
+                        </td>
+            
+                        <td>
+                            {{project.task_closed}}
+                        </td>
+            
+                        <td class="text-center">
+                            <div class="dropdown">
+                            <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                <i class="ph-list"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                {% comment %} <div class="dropdown-divider"></div> {% endcomment %}
+                                <a href="{% url 'edit_project' project.slug %}" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit project</a>
+                                <form method="post" action="{% url 'delete_project' project.slug %}" onsubmit="return confirm('Are you sure you want to delete project - {{project}}?');">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item">
+                                    <i class="ph-x me-2"></i>Remove
+                                </button>
+                                </form>
+                            </div>
+                            </div>
+                        </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+		</div>
+		<!-- /main content -->
+
+
+		<!-- Right sidebar -->
+		<div class="sidebar sidebar-end sidebar-expand-lg">
+
+			<!-- Sidebar content -->
+			<div class="sidebar-content">
+
+				<!-- Header -->
+				<div class="sidebar-section sidebar-section-body d-flex align-items-center">
+					<h5 class="mb-0">My profile</h5>
+				</div>
+				<!-- /header -->
+
+
+				<!-- Sidebar user -->
+				<div class="sidebar-section">
+					<div class="sidebar-section-body text-center pt-0">
+						<div class="card-img-actions d-inline-block mb-3">
+							<img class="img-fluid rounded-circle" src="{% static 'main_app/img/users/face11.jpg' %}" width="150" height="150" alt="">
+							<div class="card-img-actions-overlay card-img rounded-circle">
+								<a href="#" class="btn btn-outline-white btn-icon rounded-pill">
+									<i class="ph-pencil"></i>
+								</a>
+							</div>
+						</div>
+
+			    		<h6 class="mb-0">{{request.user.username}}</h6>
+			    		<span class="text-muted">Developer?</span>
+
+						{% comment %} <div class="d-flex justify-content-center mt-3">
+							<a href="#" class="link-pink" data-bs-popup="tooltip" title="Dribbble">
+								<i class="ph-dribbble-logo"></i>
+							</a>
+							<a href="#" class="link-info mx-2" data-bs-popup="tooltip" title="Twitter">
+								<i class="ph-twitter-logo"></i>
+							</a>
+							<a href="#" class="link-indigo" data-bs-popup="tooltip" title="Teams">
+								<i class="ph-microsoft-teams-logo"></i>
+							</a>
+						</div> {% endcomment %}
+					</div>
+				</div>
+				<!-- /sidebar user -->
+
+
+				<!-- Sub navigation -->
+				<div class="sidebar-section">
+					<div class="sidebar-section-header bg-light py-2">
+						<div class="fw-semibold">Navigation</div>
+					</div>
+
+					<ul class="nav nav-sidebar">
+						<li class="nav-item">
+							<a href="" class="nav-link">
+								<i class="ph-user me-2"></i>
+								 My profile
+							</a>
+						</li>
+						<li class="nav-item">
+							<a href="#" class="nav-link disabled">
+								<i class="ph-users-three me-2"></i>
+								Friends
+							</a>
+						</li>
+						<li class="nav-item">
+							<a href="#" class="nav-link disabled">
+								<i class="ph-calendar me-2"></i>
+								Events
+								{% comment %} <span class="badge bg-teal rounded-pill ms-auto">48</span> {% endcomment %}
+							</a>
+						</li>
+						<li class="nav-item">
+							<a href="#" class="nav-link disabled">
+								<i class="ph-gear me-2"></i>
+								Account settings
+							</a>
+						</li>
+					</ul>
+				</div>
+				<!-- /sub navigation -->
+
+			</div>
+			<!-- /sidebar content -->
+
+		</div>
+		<!-- /right sidebar -->
+
+	</div>
+	<!-- /page content -->
+
+{% endblock content_area %}
+
+{% block import_js %}    
+    <script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+	<script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+{% endblock import_js %}

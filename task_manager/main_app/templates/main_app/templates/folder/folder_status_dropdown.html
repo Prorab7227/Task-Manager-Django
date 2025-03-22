@@ -1,0 +1,88 @@
+{% include 'main_app/templates/status_badge.html' with act_item=folder %}
+
+<div id="status-dropdown-{{ act_item.id }}" class="dropdown-menu" style="display: none; position: absolute; z-index: 1000; width: auto; margin-top: 5px;">
+    <a href="#" class="dropdown-item" onclick="selectStatus({{ act_item.id }}, 'new')">
+        <i class="ph-plus me-2"></i>
+        <span class="badge bg-warning bg-opacity-20 text-warning me-3">New</span>
+    </a>
+    <a href="#" class="dropdown-item" onclick="selectStatus({{ act_item.id }}, 'working')">
+        <i class="ph-arrows-clockwise me-2"></i>
+        <span class="badge bg-info bg-opacity-20 text-info me-3">Working</span>
+    </a>
+    <a href="#" class="dropdown-item" onclick="selectStatus({{ act_item.id }}, 'pause')">
+        <i class="ph-pause me-2"></i>
+        <span class="badge bg-dark bg-opacity-20 text-dark me-3">Pause</span>
+    </a>
+    <a href="#" class="dropdown-item" onclick="selectStatus({{ act_item.id }}, 'done')">
+        <i class="ph-check me-2"></i>
+        <span class="badge bg-success bg-opacity-20 text-success me-3">Done</span>
+    </a>
+    <a href="#" class="dropdown-item" onclick="selectStatus({{ act_item.id }}, 'closed')">
+        <i class="ph-check-square me-2"></i>
+        <span class="badge bg-primary bg-opacity-20 text-primary me-3">Closed</span>
+    </a>
+    <a href="#" class="dropdown-item" onclick="selectStatus({{ act_item.id }}, 'archive')">
+        <i class="ph-archive me-2"></i>
+        <span class="badge bg-secondary bg-opacity-20 text-secondary me-3">Archive</span>
+    </a>
+</div>
+
+<script>
+    function toggleDropdown(act_itemId) {
+        var dropdown = document.getElementById("status-dropdown-" + act_itemId);
+        var currentStatus = document.getElementById("status-display-" + act_itemId);
+
+        // Toggle visibility of the dropdown
+        if (dropdown.style.display === "none") {
+            dropdown.style.display = "block";
+        } else {
+            dropdown.style.display = "none";
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!currentStatus.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = "none";
+            }
+        });
+    }
+
+    function selectStatus(act_itemId, newStatus) {
+        // Send AJAX request to update the status
+        $.ajax({
+            url: "{% url 'folder_update_status' 0 %}".replace('0', act_itemId),
+            type: 'POST',
+            data: {
+                'status': newStatus,
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            success: function(response) {
+                // Update the displayed status text and badge class
+                var statusDisplay = document.getElementById("status-display-" + act_itemId);
+                statusDisplay.innerHTML = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                statusDisplay.className = "badge " + getStatusClass(newStatus);
+
+                var dropdown = document.getElementById("status-dropdown-" + act_itemId);
+                dropdown.style.display = "none";
+            }
+        });
+    }
+
+    function getStatusClass(status) {
+        if (status === 'pause') {
+            return 'bg-dark bg-opacity-20 text-dark';
+        } else if (status === 'new') {
+            return 'bg-warning bg-opacity-20 text-warning';
+        } else if (status === 'working') {
+            return 'bg-info bg-opacity-20 text-info';
+        } else if (status === 'pause') {
+            return 'bg-dark bg-opacity-20 text-dark';
+        } else if (status === 'done') {
+            return 'bg-success bg-opacity-20 text-success';
+        } else if (status === 'closed') {
+            return 'bg-primary bg-opacity-20 text-primary';
+        } else if (status === 'archive') {
+            return 'bg-secondary bg-opacity-20 text-secondary';
+        }
+    }
+</script>

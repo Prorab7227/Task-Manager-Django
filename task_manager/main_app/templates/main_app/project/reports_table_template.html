@@ -1,0 +1,84 @@
+{% load static %}
+{% load form_tags %}
+
+<table class="table tasks-list">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Project</th>
+            <th>Text</th>
+            <th>Link</th>
+            <th>File</th>
+            <th>Size</th>
+            <th>Created</th>
+            <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for item in items %}
+            <tr>
+
+                <td>
+                    <a href="{% url 'user_reports' item.author %}">{{ item.author }}</a>
+                </td>
+
+                <td>
+                    <a href="{% url 'project_tasks' item.project.slug %}">{{ item.project }}</a>
+                </td>
+
+                <td>
+                    {{ item.text|safe }}
+                </td>
+
+                <td class="text-truncate" style="max-width: 150px; overflow: hidden; white-space: nowrap;">
+                    {% if item.link %}
+                        <a href="{{ item.link }}">{{ item.link }}</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if item.report_files %}
+                        {% for report_file in item.report_files.all %}
+                            <a href="{{report_file.file_path}}" id="downloadBackBlaze">{{report_file.name}}</a><br>
+                        {% endfor %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if item.report_files %}
+                        {% for report_file in item.report_files.all %}
+                            {{report_file.size|size_to_mb|floatformat:2}} Mb<br>
+                        {% endfor %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>
+                    {{ item.created|date:"d.m.Y H:i:s" }}
+                </td>
+
+                <td class="text-center">
+                    <div class="dropdown">
+                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                            <i class="ph-list"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a href="" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit report</a>
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item">
+                                    <i class="ph-x me-2"></i>Remove
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

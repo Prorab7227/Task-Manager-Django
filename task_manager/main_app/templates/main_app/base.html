@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	{% load static %}
+	{% load form_tags %}
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>{% block title %}{% endblock title %}</title>
+
+	<link rel="icon" href="{% static 'main_app/img/icons/favicon.jpg' %}" type="image/x-icon">
+
+	<!-- Global stylesheets -->
+	<link href="{% static 'main_app/css/inter/inter.css' %}" rel="stylesheet" type="text/css">
+	<link href="{% static 'main_app/css/styles_min/styles.min.css' %}" rel="stylesheet" type="text/css">
+	<link href="{% static 'main_app/css/all.min.css' %}" id="stylesheet" rel="stylesheet" type="text/css">
+	<!-- /global stylesheets -->
+
+	{% block head %}
+	{% endblock head %}
+</head>
+
+<body>
+
+	<!-- Main navbar -->
+	<div class="navbar navbar-dark navbar-expand-lg navbar-static border-bottom border-1 border-white border-opacity-10">
+		<div class="container-fluid">
+			<div class="d-flex d-lg-none me-2">
+				<button type="button" class="navbar-toggler sidebar-mobile-main-toggle rounded-pill">
+					<i class="ph-list"></i>
+				</button>
+			</div>
+
+			<div class="navbar-brand flex-1 flex-lg-0">
+				<a href="{% url 'index' %}" class="d-inline-flex align-items-center gap-2">
+					<img src="{% static 'main_app/img/icons/favicon.jpg' %}" class="h-48px w-48px rounded-4" alt="">
+					<h3 class="m-0"><b>Task Manager</b></h3>
+				</a>
+			</div>
+
+			<ul class="nav flex-row">
+				<li class="nav-item d-lg-none">
+					<a href="#navbar_search" class="navbar-nav-link navbar-nav-link-icon rounded-pill" data-bs-toggle="collapse">
+						<i class="ph-magnifying-glass"></i>
+					</a>
+				</li>
+			</ul>
+
+			<div class="navbar-collapse justify-content-center flex-lg-1 order-2 order-lg-1 collapse" id="navbar_search">
+				<div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
+					<div class="form-control-feedback form-control-feedback-start flex-grow-1" data-color-theme="dark">
+						<input type="text" class="form-control bg-transparent rounded-pill" placeholder="Search" data-bs-toggle="dropdown">
+						<div class="form-control-feedback-icon">
+							<i class="ph-magnifying-glass"></i>
+						</div>
+						<div class="dropdown-menu w-100" data-color-theme="light">
+							<button type="button" class="dropdown-item">
+								<div class="text-center w-32px me-3">
+									<i class="ph-magnifying-glass"></i>
+								</div>
+								<span>Search <span class="fw-bold">"in"</span> everywhere</span>
+							</button>
+
+							<div class="dropdown-divider"></div>
+
+							<div class="dropdown-menu-scrollable-lg">
+								<div class="dropdown-header">
+									Contacts
+									<a href="#" class="float-end">
+										See all
+										<i class="ph-arrow-circle-right ms-1"></i>
+									</a>
+								</div>
+
+								<div class="dropdown-item cursor-pointer">
+									<div class="me-3">
+										<img src="{% static 'main_app/img/users/face3.jpg' %}" class="w-32px h-32px rounded-pill" alt="">
+									</div>
+
+									<div class="d-flex flex-column flex-grow-1">
+										<div class="fw-semibold">Christ<mark>in</mark>e Johnson</div>
+										<span class="fs-sm text-muted">c.johnson@awesomecorp.com</span>
+									</div>
+
+									<div class="d-inline-flex">
+										<a href="#" class="text-body ms-2">
+											<i class="ph-user-circle"></i>
+										</a>
+									</div>
+								</div>
+
+								<div class="dropdown-item cursor-pointer">
+									<div class="me-3">
+										<img src="{% static 'main_app/img/users/face24.jpg' %}" class="w-32px h-32px rounded-pill" alt="">
+									</div>
+
+									<div class="d-flex flex-column flex-grow-1">
+										<div class="fw-semibold">Cl<mark>in</mark>ton Sparks</div>
+										<span class="fs-sm text-muted">c.sparks@awesomecorp.com</span>
+									</div>
+
+									<div class="d-inline-flex">
+										<a href="#" class="text-body ms-2">
+											<i class="ph-user-circle"></i>
+										</a>
+									</div>
+								</div>
+
+								<div class="dropdown-divider"></div>
+
+								<div class="dropdown-header">
+									Clients
+									<a href="#" class="float-end">
+										See all
+										<i class="ph-arrow-circle-right ms-1"></i>
+									</a>
+								</div>
+
+								<div class="dropdown-item cursor-pointer">
+									<div class="me-3">
+										<img src="{% static 'main_app/img/brands/adobe.svg' %}" class="w-32px h-32px rounded-pill" alt="">
+									</div>
+
+									<div class="d-flex flex-column flex-grow-1">
+										<div class="fw-semibold">Adobe <mark>In</mark>c.</div>
+										<span class="fs-sm text-muted">Enterprise license</span>
+									</div>
+
+									<div class="d-inline-flex">
+										<a href="#" class="text-body ms-2">
+											<i class="ph-briefcase"></i>
+										</a>
+									</div>
+								</div>
+
+								<div class="dropdown-item cursor-pointer">
+									<div class="me-3">
+										<img src="{% static 'main_app/img/brands/holiday-inn.svg' %}" class="w-32px h-32px rounded-pill" alt="">
+									</div>
+
+									<div class="d-flex flex-column flex-grow-1">
+										<div class="fw-semibold">Holiday-<mark>In</mark>n</div>
+										<span class="fs-sm text-muted">On-premise license</span>
+									</div>
+
+									<div class="d-inline-flex">
+										<a href="#" class="text-body ms-2">
+											<i class="ph-briefcase"></i>
+										</a>
+									</div>
+								</div>
+
+								<div class="dropdown-item cursor-pointer">
+									<div class="me-3">
+										<img src="{% static 'main_app/img/brands/ing.svg' %}" class="w-32px h-32px rounded-pill" alt="">
+									</div>
+
+									<div class="d-flex flex-column flex-grow-1">
+										<div class="fw-semibold"><mark>IN</mark>G Group</div>
+										<span class="fs-sm text-muted">Perpetual license</span>
+									</div>
+
+									<div class="d-inline-flex">
+										<a href="#" class="text-body ms-2">
+											<i class="ph-briefcase"></i>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<a href="#" class="navbar-nav-link align-items-center justify-content-center w-40px h-32px rounded-pill position-absolute end-0 top-50 translate-middle-y p-0 me-1" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+						<i class="ph-faders-horizontal"></i>
+					</a>
+
+					<div class="dropdown-menu w-100 p-3">
+						<div class="d-flex align-items-center mb-3">
+							<h6 class="mb-0">Search options</h6>
+							<a href="#" class="text-body rounded-pill ms-auto">
+								<i class="ph-clock-counter-clockwise"></i>
+							</a>
+						</div>
+
+						<div class="mb-3">
+							<label class="d-block form-label">Category</label>
+							<label class="form-check form-check-inline">
+								<input type="checkbox" class="form-check-input" checked>
+								<span class="form-check-label">Invoices</span>
+							</label>
+							<label class="form-check form-check-inline">
+								<input type="checkbox" class="form-check-input">
+								<span class="form-check-label">Files</span>
+							</label>
+							<label class="form-check form-check-inline">
+								<input type="checkbox" class="form-check-input">
+								<span class="form-check-label">Users</span>
+							</label>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Addition</label>
+							<div class="input-group">
+								<select class="form-select w-auto flex-grow-0">
+									<option value="1" selected>has</option>
+									<option value="2">has not</option>
+								</select>
+								<input type="text" class="form-control" placeholder="Enter the word(s)">
+							</div>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Status</label>
+							<div class="input-group">
+								<select class="form-select w-auto flex-grow-0">
+									<option value="1" selected>is</option>
+									<option value="2">is not</option>
+								</select>
+								<select class="form-select">
+									<option value="1" selected>Active</option>
+									<option value="2">Inactive</option>
+									<option value="3">New</option>
+									<option value="4">Expired</option>
+									<option value="5">Pending</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="d-flex">
+							<button type="button" class="btn btn-light">Reset</button>
+
+							<div class="ms-auto">
+								<button type="button" class="btn btn-light">Cancel</button>
+								<button type="button" class="btn btn-primary ms-2">Apply</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<ul class="nav flex-row justify-content-end order-1 order-lg-2">
+				{% if request.user.is_superuser %}
+					<li class="nav-item ms-lg-2">
+						<a href="{% url 'moderate_comments' %}" class="navbar-nav-link navbar-nav-link-icon rounded-pill">
+							<i class="ph-ticket"></i>
+							<span class="ms-1">Moderate comments</span>
+							{% if count_moderate != 0 %}
+							<span id="moderate-comments-count" class="badge bg-yellow text-black position-absolute top-0 end-0 translate-middle-top zindex-1 rounded-pill mt-1 me-1">
+								{{ count_moderate }}
+							</span>
+						{% endif %}
+						</a>
+					</li>
+
+					<script>
+						function updateModerateComments() {
+							$.ajax({
+								url: "{% url 'count_moderate_comments' %}", // Укажите URL представления
+								type: "GET",
+								success: function(data) {
+									let previousModerateCount = localStorage.getItem("moderateComments") || 0;
+									let new_moderate_Count = data.count_moderate;
+						
+									$("#moderate-comments-count").text(new_moderate_Count); // Обновляем UI
+									localStorage.setItem("moderateComments", new_moderate_Count); // Сохраняем в localStorage
+						
+									if (new_moderate_Count > previousModerateCount) {
+										showAdminBrowserNotification(new_moderate_Count);
+									}
+								}
+							});
+						}
+						
+						// Функция для показа уведомления браузера
+						function showAdminBrowserNotification(moderate_count) {
+							if (Notification.permission === "granted") {
+								let notification = new Notification("Moderate Comments", {
+									body: `You have ${moderate_count} new comments for moderate!`,
+									icon: '{% static "main_app/img/icons/favicon.jpg" %}' // Укажите путь к иконке
+								});
+						
+								notification.onclick = function () {
+									window.open("{% url 'moderate_comments' %}"); // Открыть страницу с комментариями
+								};
+							} else if (Notification.permission !== "denied") {
+								Notification.requestPermission().then(permission => {
+									if (permission === "granted") {
+										showAdminBrowserNotification(moderate_count);
+									}
+								});
+							}
+						}
+						
+						// Запускаем обновление каждую минуту
+						setInterval(updateModerateComments, 30000);
+					</script>
+				{% endif %}
+				
+				<li class="nav-item nav-item-dropdown-lg dropdown ms-lg-2">
+					<a href="{% url 'all_comments' %}" class="navbar-nav-link navbar-nav-link-icon rounded-pill">
+						<i class="ph-chats"></i>
+						<span class="ms-1">Comments</span>
+						{% if count_unread != 0 %}
+							<span id="unread-comments-count" class="badge bg-yellow text-black position-absolute top-0 end-0 translate-middle-top zindex-1 rounded-pill mt-1 me-1">
+								{{ count_unread }}
+							</span>
+						{% endif %}
+					</a>
+				</li>
+
+				<script>
+					function updateUnreadComments() {
+						$.ajax({
+							url: "{% url 'count_unread_comments' %}", // Укажите URL представления
+							type: "GET",
+							success: function(data) {
+								let previousUnreadCount = localStorage.getItem("unreadComments") || 0;
+								let newCount = data.count_unread;
+					
+								$("#unread-comments-count").text(newCount); // Обновляем UI
+								localStorage.setItem("unreadComments", newCount); // Сохраняем в localStorage
+					
+								if (newCount > previousUnreadCount) {
+									showBrowserNotification(newCount);
+								}
+							}
+						});
+					}
+					
+					// Функция для показа уведомления браузера
+					function showBrowserNotification(count) {
+						if (Notification.permission === "granted") {
+							let notification = new Notification("New Comments", {
+								body: `You have ${count} new comments!`,
+								icon: '{% static "main_app/img/icons/favicon.jpg" %}' // Укажите путь к иконке
+							});
+					
+							notification.onclick = function () {
+								window.open("{% url 'all_comments' %}"); // Открыть страницу с комментариями
+							};
+						} else if (Notification.permission !== "denied") {
+							Notification.requestPermission().then(permission => {
+								if (permission === "granted") {
+									showBrowserNotification(count);
+								}
+							});
+						}
+					}
+					
+					// Запускаем обновление каждую минуту
+					setInterval(updateUnreadComments, 30000);				
+				</script>
+
+				<li class="nav-item ms-lg-2">
+					<a href="{% url 'action' %}" class="navbar-nav-link navbar-nav-link-icon rounded-pill">
+						<i class="ph-arrows-clockwise"></i>
+						<span class="ms-1">Actions</span>
+					</a>
+				</li>
+
+				<div class="vr d-none d-sm-block flex-shrink-0 mx-2"></div>
+
+				<li class="nav-item nav-item-dropdown-lg dropdown ms-lg-2">
+					<a href="#" class="navbar-nav-link align-items-center rounded-pill p-1" data-bs-toggle="dropdown">
+						<div class="status-indicator-container">
+							<img src="{% static 'main_app/img/users/face11.jpg' %}" class="w-32px h-32px rounded-pill" alt="">
+							<span class="status-indicator bg-success"></span>
+						</div>
+						<span class="d-none d-lg-inline-block mx-lg-2">{{ request.user }}</span>
+					</a>
+
+					<div class="dropdown-menu dropdown-menu-end">
+						<a href="{% url 'account_profile' %}" class="dropdown-item">
+							<i class="ph-user-circle me-2"></i>
+							My profile
+						</a>
+						<div class="dropdown-divider"></div>
+						<a href="{% url 'account_logout' %}" class="dropdown-item">
+							<i class="ph-sign-out me-2"></i>
+							Logout
+						</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!-- /main navbar -->
+
+
+	<!-- Page content -->
+	<div class="page-content">
+
+
+		<!-- Main sidebar -->
+		<div class="sidebar sidebar-dark sidebar-main sidebar-expand-lg">
+
+			<!-- Sidebar content -->
+			<div class="sidebar-content">
+				
+				<!-- Sidebar header -->
+				<div class="sidebar-section">
+					<div class="sidebar-section-body d-flex justify-content-center">
+						<h5 class="sidebar-resize-hide flex-grow-1 my-auto">Navigation</h5>
+
+						<div>
+							<button type="button" class="btn btn-flat-white btn-icon btn-sm rounded-pill border-transparent sidebar-control sidebar-main-resize d-none d-lg-inline-flex">
+								<i class="ph-arrows-left-right"></i>
+							</button>
+
+							<button type="button" class="btn btn-flat-white btn-icon btn-sm rounded-pill border-transparent sidebar-mobile-main-toggle d-lg-none">
+								<i class="ph-x"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+				<!-- /sidebar header -->
+
+				<!-- Main navigation -->
+				<div class="sidebar-section">
+					<ul class="nav nav-sidebar" data-nav-type="accordion">
+
+						<!-- Main -->
+						<li class="nav-item-header">
+							<div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Main</div>
+							<i class="ph-dots-three sidebar-resize-show"></i>
+						</li>
+
+						<li class="nav-item">
+							<a href="{% url 'index' %}" class="nav-link">
+								<i class="ph-house"></i>
+								<span>
+									Dashboard
+								</span>
+							</a>
+						</li>
+						
+						<li class="nav-item" onclick="location.href='{% url 'project_list' %}'" style="cursor: pointer;">
+							<a href="{% url 'project_list' %}" class="nav-link">
+								<i class="ph-article"></i>
+								<span>Projects</span>
+							</a>
+							<ul class="nav-group-sub collapse {% if '/projects/' in request.path %}show{% endif %}">
+								<li class="nav-item">
+									<a href="{% url 'project_list' %}" class="nav-link">
+										<i class="ph-person-simple-run"></i>
+										Active
+									</a>
+								</li>
+								<li class="nav-item">
+									<a href="{% url 'project_list_closed' %}" class="nav-link">
+										<i class="ph-check-square"></i>
+										Closed
+									</a>
+								</li>
+								<li class="nav-item">
+									<a href="{% url 'project_list_archive' %}" class="nav-link">
+										<i class="ph-archive"></i>
+										Archive
+									</a>
+								</li>
+								<li class="nav-item">
+									<a href="{% url 'project_list_all' %}" class="nav-link">
+										<i class="ph-text-align-justify"></i>
+										All
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li class="nav-item" onclick="location.href='{% url 'folder_list' %}'" style="cursor: pointer;">
+							<a href="{% url 'folder_list' %}" class="nav-link">
+								<i class="ph-folder"></i>
+								<span>Folders</span>
+							</a>
+							<ul class="nav-group-sub collapse {% if '/folders/' in request.path %}show{% endif %}">
+								<li class="nav-item">
+									<a href="{% url 'folder_list' %}" class="nav-link">
+										<i class="ph-folder"></i>
+										All
+									</a>
+								</li>
+								<li class="nav-item">
+									<a href="{% url 'folder_list_archive' %}" class="nav-link">
+										<i class="ph-archive"></i>
+										Archive
+									</a>
+								</li>
+							</ul>
+						</li>					
+
+						{% if request.user.is_superuser %}
+							<li class="nav-item" onclick="location.href='{% url 'users_list' %}'" style="cursor: pointer;">
+								<a href="{% url 'users_list' %}" class="nav-link">
+									<i class="ph-users"></i>
+									<span>Users</span>
+								</a>
+								{% block sub_users %}{% endblock sub_users %}
+							</li>
+						{% endif %}
+
+						<li class="nav-item">
+							<a href="{% url 'clients' %}" class="nav-link">
+								<i class="ph-chalkboard-teacher"></i>
+								<span>
+									Clients
+								</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a href="{% url 'screener' %}" class="nav-link" tabindex="-1" aria-disabled="true">
+								<i class="ph-timer"></i>
+								<span>Tracker</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a href="{% url 'project_list_reports' %}" class="nav-link">
+								<i class="ph-file-text"></i>
+								Reports
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a href="{% url 'tag_list' %}" class="nav-link">
+								<i class="ph-tag"></i>
+								Tags
+							</a>
+						</li>
+
+					</ul>
+				</div>
+				<!-- /main navigation -->
+
+			</div>
+			<!-- /sidebar content -->
+			 
+		</div>
+		<!-- /main sidebar -->
+
+
+		<!-- Main content -->
+		<div class="content-wrapper">
+
+			<!-- Inner content -->
+			<div class="content-inner">			
+
+				<!-- Page header -->
+				<div class="page-header page-header-light shadow">
+					<div class="page-header-content d-lg-flex">
+						<div class="d-flex">
+							<h4 class="page-title mb-0">
+								{% block page_header_title %}{% endblock page_header_title %}
+							</h4>
+
+							<a href="#page_header" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+								<i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+							</a>
+						</div>
+
+						<div class="collapse d-lg-block my-lg-auto ms-lg-auto" id="page_header">
+							<div class="d-sm-flex align-items-center mb-3 mb-lg-0 ms-lg-3">
+								<div class="dropdown w-100 w-sm-auto">
+									<a href="#" id="selected-team" class="d-flex align-items-center text-body lh-1 dropdown-toggle py-sm-2" data-bs-toggle="dropdown" data-bs-display="static">
+										<img id="selected-team-img" src="{% static 'main_app/img/logos/2.svg' %}" class="w-32px h-32px me-2" alt="">
+										<div class="me-auto me-lg-1">
+											<div class="fs-sm text-muted mb-1">Team</div>
+											<div id="selected-team-name" class="fw-semibold">Select Team</div>
+										</div>
+									</a>
+
+									<div class="dropdown-menu dropdown-menu-lg-end w-100 w-lg-auto wmin-300 wmin-sm-350 pt-0">
+										<div class="d-flex align-items-center p-3">
+											<h6 class="fw-semibold mb-0">Teams</h6>
+											<a href="{% url 'companies' %}" class="ms-auto">
+												View all
+												<i class="ph-arrow-circle-right ms-1"></i>
+											</a>
+										</div>
+										{% if companies %}
+											{% for company, count in companies %}
+												<a href="#" class="dropdown-item dropdown-item-company py-2">
+													<img src="{% static 'main_app/img/logos/2.svg' %}" class="w-32px h-32px me-2" alt="">
+													<div>
+														<div class="fw-semibold">{{ company }}</div>
+														<div class="fs-sm text-muted">{{ count }} members</div>
+													</div>
+												</a>
+											{% endfor %}
+										{% else %}
+											<div class="py-2 px-3">
+												<div>
+													<div class="fw-semibold">You are not in any teams</div>
+												</div>
+											</div>
+										{% endif %}
+									</div>
+
+									<script>
+										document.addEventListener('DOMContentLoaded', () => {
+											const dropdownItems = document.querySelectorAll('.dropdown-item-company');
+											const selectedTeamName = document.getElementById('selected-team-name');
+											const selectedTeamImg = document.getElementById('selected-team-img');
+											const activeTeamKey = 'activeTeam'; // Ключ для localStorage
+										
+											// Функция для обновления отображаемого выбора
+											const updateSelectedTeam = (teamName, imgSrc) => {
+												selectedTeamName.textContent = teamName;
+												selectedTeamImg.src = imgSrc;
+											};
+										
+											// Восстановление выбора из localStorage
+											const savedTeam = localStorage.getItem(activeTeamKey);
+											if (savedTeam) {
+												const [teamName, imgSrc] = savedTeam.split('|'); // Разделитель для хранения данных
+												updateSelectedTeam(teamName, imgSrc);
+											}
+										
+											// Обработка клика по элементу списка
+											dropdownItems.forEach(item => {
+												item.addEventListener('click', (e) => {
+													e.preventDefault();
+										
+													// Извлекаем имя команды и путь к изображению
+													const teamName = item.querySelector('.fw-semibold').textContent;
+													const imgSrc = item.querySelector('img').src;
+										
+													// Обновляем отображение
+													updateSelectedTeam(teamName, imgSrc);
+										
+													// Сохраняем выбор в localStorage
+													localStorage.setItem(activeTeamKey, `${teamName}|${imgSrc}`);
+												});
+											});
+										});
+									</script>
+								</div>
+
+								<div class="vr d-none d-sm-block flex-shrink-0 my-2 mx-3"></div>
+
+								<div class="d-inline-flex mt-3 mt-sm-0">
+									{% block user_in_project %}
+									{% endblock user_in_project %}
+									
+									{% block add_some %}
+										
+									{% endblock add_some %}
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="page-header-content d-lg-flex border-top">
+						<div class="d-flex">
+							<div class="breadcrumb py-2">
+								<a href="{% url 'index' %}" class="breadcrumb-item"><i class="ph-house"></i></a>
+								{% block breadcrumb %}								
+									
+								{% endblock breadcrumb %}
+							</div>
+
+							<a href="#breadcrumb_elements" class="btn btn-light align-self-center collapsed d-lg-none border-transparent rounded-pill p-0 ms-auto" data-bs-toggle="collapse">
+								<i class="ph-caret-down collapsible-indicator ph-sm m-1"></i>
+							</a>
+						</div>
+
+					</div>
+				</div>
+				<!-- /page header -->
+
+				<!-- Content area -->
+				<div class="content">
+
+					{% block content_area %}
+					{% endblock content_area %}
+
+				</div>
+				<!-- /content area -->
+
+			</div>
+			<!-- /inner content -->
+
+		</div>
+		<!-- /main content -->
+
+	</div>
+	<!-- /page content -->
+
+	<!-- Footer -->
+	<div class="navbar navbar-dark navbar-sm navbar-footer border-top border-1 border-white border-opacity-10">
+
+		<div class="container-fluid">
+			<span>&copy; 2024 </span>
+
+			<ul class="nav">
+				<li class="nav-item">
+					<a href="#" class="navbar-nav-link navbar-nav-link-icon rounded me-5">
+						<div class="d-flex align-items-center mx-md-1">
+							<i class="ph-lifebuoy"></i>
+							<span class="d-none d-md-inline-block ms-2">Support</span>
+						</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+
+	</div>
+	<!-- /footer -->
+
+	<!-- Notifications -->
+	<div class="offcanvas offcanvas-end" tabindex="-1" id="notifications">
+		<div class="offcanvas-header py-0">
+			<h5 class="offcanvas-title py-3">Actions</h5>
+			<button type="button" class="btn btn-light btn-sm btn-icon border-transparent rounded-pill" data-bs-dismiss="offcanvas">
+				<i class="ph-x"></i>
+			</button>
+		</div>
+
+		<div class="offcanvas-body p-0">
+			<div class="p-3">
+				<div class="d-flex align-items-start mb-3">
+
+				</div>
+    		</div>
+		</div>
+	</div>
+	<!-- /notifications -->
+
+	<!-- Demo config -->
+	<div class="offcanvas offcanvas-end" tabindex="-1" id="demo_config">
+		<div class="position-absolute top-50 end-100 visible">
+			<button type="button" class="btn btn-primary btn-icon translate-middle-y rounded-end-0" data-bs-toggle="offcanvas" data-bs-target="#demo_config">
+				<i class="ph-gear"></i>
+			</button>
+		</div>
+
+		<div class="offcanvas-header border-bottom py-0">
+			<h5 class="offcanvas-title py-3">Demo configuration</h5>
+			<button type="button" class="btn btn-light btn-sm btn-icon border-transparent rounded-pill" data-bs-dismiss="offcanvas">
+				<i class="ph-x"></i>
+			</button>
+		</div>
+
+		<div class="offcanvas-body">
+			<div class="fw-semibold mb-2">Color mode</div>
+			<div class="list-group mb-3">
+				<label class="list-group-item list-group-item-action form-check border-width-1 rounded mb-2">
+					<div class="d-flex flex-fill my-1">
+						<div class="form-check-label d-flex me-2">
+							<i class="ph-sun ph-lg me-3"></i>
+							<div>
+								<span class="fw-bold">Light theme</span>
+								<div class="fs-sm text-muted">Set light theme or reset to default</div>
+							</div>
+						</div>
+						<input type="radio" class="form-check-input cursor-pointer ms-auto" name="main-theme" value="light" checked>
+					</div>
+				</label>
+
+				<label class="list-group-item list-group-item-action form-check border-width-1 rounded mb-2">
+					<div class="d-flex flex-fill my-1">
+						<div class="form-check-label d-flex me-2">
+							<i class="ph-moon ph-lg me-3"></i>
+							<div>
+								<span class="fw-bold">Dark theme</span>
+								<div class="fs-sm text-muted">Switch to dark theme</div>
+							</div>
+						</div>
+						<input type="radio" class="form-check-input cursor-pointer ms-auto" name="main-theme" value="dark">
+					</div>
+				</label>
+
+				<label class="list-group-item list-group-item-action form-check border-width-1 rounded mb-0">
+					<div class="d-flex flex-fill my-1">
+						<div class="form-check-label d-flex me-2">
+							<i class="ph-translate ph-lg me-3"></i>
+							<div>
+								<span class="fw-bold">Auto theme</span>
+								<div class="fs-sm text-muted">Set theme based on system mode</div>
+							</div>
+						</div>
+						<input type="radio" class="form-check-input cursor-pointer ms-auto" name="main-theme" value="auto">
+					</div>
+				</label>
+			</div>
+		</div>
+	</div>
+	<!-- /demo config -->
+
+	<!-- Core JS files -->
+	<script src="{% static 'main_app/js/demo_configurator.js' %}"></script>
+	<script src="{% static 'main_app/js/bootstrap.bundle.min.js' %}"></script>
+	<!-- /core JS files -->
+
+	<!-- Theme JS files -->
+	<script src="{% static 'main_app/js/app.js' %}"></script>
+	<!-- /theme JS files -->
+
+	<script src="{% static 'main_app/js/forms/imask.min.js' %}"></script>
+    <script src="{% static 'main_app/js/forms/form_controls_extended.js' %}"></script>
+    <script src="{% static 'main_app/js/index_js/jquery.min.js' %}"></script>
+	<script src="{% static 'main_app/js/dashboard/dashboard.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/custom_links.js' %}"></script>
+
+	<script>
+		function updateTaskCount() {
+			$.ajax({
+				url: "{% url 'count_tasks' %}", // Укажите URL представления
+				type: "GET",
+				success: function(data) {
+					let previousTaskCount = localStorage.getItem("countTasks") || 0;
+					let new_tasks_count = data.task_count;
+		
+					localStorage.setItem("countTasks", new_tasks_count); // Сохраняем в localStorage
+		
+					if (new_tasks_count > previousTaskCount) {
+						showTaskBrowserNotification(new_tasks_count);
+					}
+				}
+			});
+		}
+		
+		// Функция для показа уведомления браузера
+		function showTaskBrowserNotification(task__count) {
+			if (Notification.permission === "granted") {
+				let notification = new Notification("New task", {
+					body: `You have a new task!`,
+					icon: '{% static "main_app/img/icons/favicon.jpg" %}' // Укажите путь к иконке
+				});
+		
+				notification.onclick = function () {
+					window.open("{% url 'index' %}"); // Открыть страницу с комментариями
+				};
+			} else if (Notification.permission !== "denied") {
+				Notification.requestPermission().then(permission => {
+					if (permission === "granted") {
+						showTaskBrowserNotification(task__count);
+					}
+				});
+			}
+		}
+		
+		// Запускаем обновление каждую минуту
+		setInterval(updateTaskCount, 30000);
+	</script>
+
+	{% block import_js %}{% endblock import_js %}
+</body>

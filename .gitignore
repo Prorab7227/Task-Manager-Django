@@ -1,0 +1,10 @@
+.other_files
+.venv
+task_manager/media
+task_manager/README.md
+*.zip
+*.rar
+migrations
+__pycache__
+*.dump
+.env

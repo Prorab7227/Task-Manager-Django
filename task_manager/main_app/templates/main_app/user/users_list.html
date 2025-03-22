@@ -1,0 +1,124 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Users
+{% endblock title %}
+
+{% block page_header_title %}
+  Users
+{% endblock page_header_title %}
+
+{% block content_area %}
+
+    <!-- Card titles and subtitles -->
+    <div class="card rounded-0">
+
+        <table class="table tasks-list">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Projects</th>
+                    <th>Tasks</th>
+                    <th>New</th>
+                    <th>Working</th>
+                    <th>Done</th>
+                    <th class="text-center text-muted" style="width: 30px;">
+                        <i class="ph-check"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>
+                            <div>
+                                <img src="{% static 'main_app/img/users/face11.jpg' %}" class="w-32px h-32px rounded-pill" alt="">
+                                <a class="fw-semibold" href="{% url 'user_tasks' user.username %}">{{ user }}</a>
+                            </div>
+                        </td>
+        
+                        <td>
+                            {% for user_key, project_count in total_project_count.items %}
+                                {% if user == user_key %}
+                                    <div>
+                                        {{ project_count }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+        
+                        <td>
+                            {% for user_key, all_task_count in total_task_count.items %}
+                                {% if user == user_key %}
+                                    <div>
+                                        {{ all_task_count }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+        
+                        <!-- New tasks column -->
+                        <td>
+                            {% for user_key, task_counts in user_task_counts.items %}
+                                {% if user == user_key %}
+                                    <div>
+                                        {{ task_counts.new }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+
+                        <!-- Working tasks column -->
+                        <td>
+                            {% for user_key, task_counts in user_task_counts.items %}
+                                {% if user == user_key %}
+                                    <div>
+                                        {{ task_counts.working }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+
+                        <!-- Done tasks column -->
+                        <td>
+                            {% for user_key, task_counts in user_task_counts.items %}
+                                {% if user == user_key %}
+                                    <div>
+                                        {{ task_counts.done }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+        
+                        <td class="text-center">
+                            <div class="dropdown">
+                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                    <i class="ph-list"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a href="#" class="dropdown-item"><i class="ph-calendar-check me-2"></i> Empty</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Empty</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+    <!-- /card titles and subtitles -->
+
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+
+    <script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+    <script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+
+    <script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+{% endblock import_js %}

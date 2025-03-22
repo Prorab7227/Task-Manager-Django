@@ -1,0 +1,17 @@
+<span class="badge 
+    {% if status == 'pause' %}
+        bg-dark bg-opacity-20 text-dark
+    {% elif status == 'new' %}
+        bg-warning bg-opacity-20 text-warning
+    {% elif status == 'working' %}
+        bg-info bg-opacity-20 text-info
+    {% elif status == 'done' %}
+        bg-success bg-opacity-20 text-success
+    {% elif status == 'closed' %}
+        bg-primary bg-opacity-20 text-primary
+    {% elif status == 'archive' %}
+        bg-secondary bg-opacity-20 text-secondary
+    {% endif %}"
+    >
+    {{ status|title }}
+</span>

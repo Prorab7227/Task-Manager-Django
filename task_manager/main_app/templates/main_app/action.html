@@ -1,0 +1,288 @@
+{% extends 'main_app/base.html' %}
+{% load form_tags %}
+{% load static %}
+
+{% block title %}
+    Actions
+{% endblock title %}
+
+{% block page_header_title %}
+    Actions
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    <a href="#" class="breadcrumb-item">Actions</a>
+{% endblock breadcrumb %}
+
+{% block content_area %}
+    <div class="card">
+        <div class="card-body">
+            <div class="list-feed">
+                {% for action in actions %}
+                    <div class="list-feed-item">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                {% include 'main_app/templates/action/action_type_icon.html' with action_type=action.action_type %}
+                            </div>
+                            <div class="flex-fill">
+                                <p>
+                                    {% if action.author == "Unknown" %}
+                                        {% if action.comment_author %}
+                                            <a href="{% url 'user_tasks' action.comment_author %}">{{ action.comment_author }}</a>
+                                        {% else %}
+                                            {{ action.comment_author }}
+                                        {% endif %}
+                                    {% else %}
+                                        <a href="{% url 'user_tasks' action.author %}">{{ action.author }}</a>
+                                    {% endif %}
+                                    {% include 'main_app/templates/action/action_type_badge.html' with action_type=action.action_type %}
+                                    <span class="fs-sm opacity-50">{{ action.acted|timesince }} ago</span>
+                                </p>
+                                {% if action.action_type == "create" %}
+                                    <span>{{action.object_type|capfirst}}</span>
+                                    {% if action.object_type == "folder" %}
+                                        - <a href="{% url 'folder_projects' action.after_slug %}">{{ action.after_name }}</a>
+                                    {% elif action.object_type == "project" %}
+                                        - <a href="{% url 'project_tasks' action.after_slug %}">{{ action.after_name }}</a>
+                                    {% elif action.object_type == "task" %}
+                                        - <a href="{% url 'task_detail' action.after_slug %}">{{ action.after_name }}</a>
+                                    {% elif action.object_type == "projectcomment" %}
+                                        {% if action.projectcomment_project %}
+                                            - <a href="{% url 'project_tasks' action.projectcomment_project.slug %}">{{action.projectcomment_project}}</a>
+                                        {% else %}
+                                            - Deleted Project
+                                        {% endif %}
+                                    {% elif action.object_type == "taskcomment" %}
+                                        {% if action.taskcomment_task.slug %}
+                                            - <a href="{% url 'task_detail' action.taskcomment_task.slug %}">{{action.taskcomment_task}}</a>
+                                        {% else %}
+                                            - Deleted Task
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {% if action.object_type == "projectcomment" or action.object_type == "taskcomment" %}
+                                        <div class="accordion mt-2" style="width: 100%;" id="accordion-{{ action.id }}">
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="heading-{{ action.id }}">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ action.id }}" aria-expanded="false" aria-controls="collapse-{{ action.id }}">
+                                                        {{ action.object_type|capfirst }} Updates
+                                                    </button>
+                                                </h2>
+                                                <div id="collapse-{{ action.id }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ action.id }}" data-bs-parent="#accordion-{{ action.id }}">
+                                                    <div class="accordion-body">
+                                                        {{ action.after_text|safe }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    
+                                {% elif action.action_type == "delete" %}
+                                    <span>{{action.object_type|capfirst}}</span>
+                                    {% if action.object_type == "folder" %}
+                                        - {{ action.before_name }}
+                                    {% elif action.object_type == "project" %}
+                                        - {{ action.before_name }}
+                                    {% elif action.object_type == "task" %}
+                                        - {{ action.before_name }}
+                                    {% elif action.object_type == "projectcomment" %}
+                                        {% if action.projectcomment_project %}
+                                            - {{action.projectcomment_project}}
+                                        {% endif %}
+                                    {% elif action.object_type == "taskcomment" %}
+                                        {% if action.taskcomment_task %}
+                                            - {{action.taskcomment_task}}
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {% if action.object_type == "projectcomment" or action.object_type == "taskcomment" %}
+                                        <div class="accordion mt-2" style="width: 100%;" id="accordion-{{ action.id }}">
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="heading-{{ action.id }}">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ action.id }}" aria-expanded="false" aria-controls="collapse-{{ action.id }}">
+                                                        {{ action.object_type|capfirst }} Updates
+                                                    </button>
+                                                </h2>
+                                                <div id="collapse-{{ action.id }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ action.id }}" data-bs-parent="#accordion-{{ action.id }}">
+                                                    <div class="accordion-body">
+                                                        {{ action.before_text|safe }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                {% elif action.action_type == "update" %}
+                                    <span>{{action.object_type|capfirst}}</span>
+                                    {% if action.object_type == "folder" %}
+                                        - <a href="{% url 'folder_projects' action.after_slug %}">{{ action.after_name }}</a>
+                                    {% elif action.object_type == "project" %}
+                                        - <a href="{% url 'project_tasks' action.after_slug %}">{{ action.after_name }}</a>
+                                    {% elif action.object_type == "task" %}
+                                        - <a href="{% url 'task_detail' action.after_slug %}">{{ action.after_name }}</a>
+                                    {% elif action.object_type == "projectcomment" %}
+                                        - <a href="{% url 'project_tasks' action.projectcomment_project.slug %}">{{action.projectcomment_project}}</a>
+                                    {% elif action.object_type == "taskcomment" %}
+                                        {% if action.taskcomment_task.slug %}
+                                            - <a href="{% url 'task_detail' action.taskcomment_task.slug %}">{{action.taskcomment_task}}</a>
+                                        {% else %}
+                                            - {{action.taskcomment_task}}
+                                        {% endif %}
+                                    {% endif %}
+
+                                    <div class="accordion mt-2" style="width: 100%;" id="accordion-{{ action.id }}">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading-{{ action.id }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ action.id }}" aria-expanded="false" aria-controls="collapse-{{ action.id }}">
+                                                    {{ action.object_type|capfirst }} Updates
+                                                </button>
+                                            </h2>
+                                            <div id="collapse-{{ action.id }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ action.id }}" data-bs-parent="#accordion-{{ action.id }}">
+                                                <div class="accordion-body">
+                                                    <ul>
+                                                        {% for key, diff in action.changes.items %}
+
+                                                            {% if key == "name" or key == "title" %}
+                                                                <li>
+                                                                    <b>{{ key|capfirst }}:</b><br>
+                                                                    {% if diff.before  %}
+                                                                        <span>Before:</span> {{ diff.before }}<br>
+                                                                    {% endif %}
+                                                                    <span>After:</span> {{ diff.after }}
+                                                                </li>
+                                                            {% elif key == "slug" %}
+
+                                                            {% elif key == "client" %}
+                                                                {% if diff.before or diff.after %}
+                                                                    <li>
+                                                                        <b>{{ key|capfirst }}:</b><br>
+                                                                        {% if diff.before  %}
+                                                                            <span>Before:</span> {{ diff.before }}<br>
+                                                                        {% else %}
+                                                                            <span>Before:</span> -<br>
+                                                                        {% endif %}
+                                                                        {% if diff.after%}
+                                                                            <span>After:</span> {{ diff.after }}
+                                                                        {% else %}
+                                                                            <span>After:</span> -
+                                                                        {% endif %}
+                                                                    </li>
+                                                                {% endif %}
+                                                            {% elif key == "description" %}
+                                                                <li>
+                                                                    <b>{{ key|capfirst }}:</b><br>
+                                                                    {% if diff.before  %}
+                                                                        <span>Before:</span> {{ diff.before|safe }}
+                                                                    {% endif %}
+                                                                    {% if diff.after %}
+                                                                        <span>After:</span> {{ diff.after|safe }}
+                                                                    {% endif %}
+                                                                </li>
+                                                            {% elif key == "assignee" %}
+                                                                <li>
+                                                                    <b>{{ key|capfirst }}:</b><br>
+                                                                    {% if diff.before  %}
+                                                                        <span>Before: </span><a href="{% url 'user_tasks' diff.before %}">{{ diff.before }}</a><br>
+                                                                    {% else %}
+                                                                        <span>Before: </span>-<br>
+                                                                    {% endif %}
+                                                                    {% if diff.after %}
+                                                                        <span>After: </span><a href="{% url 'user_tasks' diff.after %}">{{ diff.after }}</a>
+                                                                    {% else %}
+                                                                        <span>After: </span>-
+                                                                    {% endif %}
+                                                                </li>
+                                                            {% elif key == "members" %}
+                                                                <li>
+                                                                    <b>{{ key|capfirst }}:</b><br>
+                                                                    {% if diff.before  %}
+                                                                        <span>Before: </span><a href="{% url 'user_tasks' diff.before %}">{{ diff.before }}</a><br>
+                                                                    {% else %}
+                                                                        <span>Before: </span>-<br>
+                                                                    {% endif %}
+                                                                    {% if diff.after %}
+                                                                        <span>After: </span><a href="{% url 'user_tasks' diff.after %}">{{ diff.after }}</a>
+                                                                    {% else %}
+                                                                        <span>After: </span>-
+                                                                    {% endif %}
+                                                                </li>
+                                                            {% elif key == "last_modified" %}
+
+                                                            {% elif key == "status" %}
+                                                                <li>
+                                                                    <b>{{ key|capfirst }}:</b><br>
+                                                                    {% if diff.before  %}
+                                                                        <span>Before:</span>{% include 'main_app/templates/action/action_status_badge.html' with status=diff.before %}<br>
+                                                                    {% endif %}
+                                                                    <span>After:</span>{% include 'main_app/templates/action/action_status_badge.html' with status=diff.after %}
+                                                                </li>
+                                                            {% elif key == "priority" %}
+                                                                <li>
+                                                                    <b>{{ key|capfirst }}:</b><br>
+                                                                    {% if diff.before  %}
+                                                                        <span>Before:</span>{% include 'main_app/templates/action/action_priority_badge.html' with priority=diff.before %}<br>
+                                                                    {% endif %}
+                                                                    <span>After:</span>{% include 'main_app/templates/action/action_priority_badge.html' with priority=diff.after %}
+                                                                </li>
+                                                            {% elif key == "text" %}
+                                                                <li>
+                                                                    <b>{{ key|capfirst }}:</b><br>
+                                                                    {% if diff.before  %}
+                                                                        <span>Before:</span> {{ diff.before|safe }}
+                                                                    {% endif %}
+                                                                    {% if diff.after %}
+                                                                        <span>After:</span> {{ diff.after|safe }}
+                                                                    {% endif %}
+                                                                </li>
+                                                            {% elif key == "replied_for" %}
+                                                                <li>
+                                                                    <b>{{ key|capfirst }}:</b><br>
+                                                                    {% if diff.before  %}
+                                                                        <span>Before:</span> {{ diff.before|safe }}<br>
+                                                                    {% else %}
+                                                                        <span>Before:</span> -<br>
+                                                                    {% endif %}
+                                                                    {% if diff.after %}
+                                                                        <span>After:</span> {{ diff.after|safe }}
+                                                                    {% endif %}
+                                                                </li>
+                                                            {% elif key == "project" %}
+                                                                <li>
+                                                                    <b>{{ key|capfirst }}:</b><br>
+                                                                    {% if diff.before %}
+                                                                        <span>Before:</span><a href="{% url 'project_tasks' diff.before.slug %}">{{ diff.before }}</a><br>
+                                                                    {% else %}
+                                                                        <span>Before:</span> -<br>
+                                                                    {% endif %}
+                                                                    {% if diff.after %}
+                                                                        <span>After:</span><a href="{% url 'project_tasks' diff.after.slug %}">{{ diff.after }}</a>
+                                                                    {% else %}
+                                                                        <span>After:</span> -
+                                                                    {% endif %}
+                                                                </li>
+                                                            {% else %}
+                                                                <li>
+                                                                    <b>{{ key|capfirst }}:</b>
+                                                                    {% if diff.before  %}
+                                                                        <span>Before:</span> {{ diff.before }}<br>
+                                                                    {% endif %}
+                                                                    {% if diff.after %}
+                                                                        <span>After:</span> {{ diff.after }}
+                                                                    {% endif %}
+                                                                </li>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock content_area %}

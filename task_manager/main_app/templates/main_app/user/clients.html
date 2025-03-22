@@ -1,0 +1,106 @@
+{% extends 'main_app/base.html' %}
+
+{% block title %}
+    Clients
+{% endblock title %}
+
+{% block page_header_title %}
+    Clients
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    <a href="#" class="breadcrumb-item">Clients</a>
+{% endblock breadcrumb %}
+
+{% block content_area %}
+
+    <!-- Card titles and subtitles -->
+    <div class="card rounded-0">
+
+        <table class="table tasks-list">
+            <thead>
+                <tr>
+                    <th>Clients</th>
+                    <th>Folders</th>
+                    <th>Projects</th>
+                    <th>New</th>
+                    <th>Working</th>
+                    <th>Pause</th>
+                    <th>Done</th>
+                    <th>Closed</th>
+                    <th>Archive</th>
+                    <th class="text-center text-muted" style="width: 30px;">
+                        <i class="ph-check"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'client_projects' client.client %}" class="fw-semibold">{{ client.client }}</a>
+                        </td>
+
+                        <td>
+                            {{ client.folders }}
+                        </td>
+        
+                        <td>
+                            {{ client.projects }}
+                        </td>
+        
+                        <td>
+                            {{ client.new }}
+                        </td>
+
+                        <td>
+                            {{ client.working }}
+                        </td>
+
+                        <td>
+                            {{ client.pause }}
+                        </td>
+
+                        <td>
+                            {{ client.done }}
+                        </td>
+
+                        <td>
+                            {{ client.closed }}
+                        </td>
+
+                        <td>
+                            {{client.archive}}
+                        </td>
+        
+                        <td class="text-center">
+                            <div class="dropdown">
+                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                    <i class="ph-list"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a href="#" class="dropdown-item"><i class="ph-calendar-check me-2"></i> Empty</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Empty</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+    <!-- /card titles and subtitles -->
+
+{% endblock content_area %}
+
+{% block import_js %}
+    {% load static %}
+    
+	<script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+    <script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+    <script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+    <script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+{% endblock import_js %}

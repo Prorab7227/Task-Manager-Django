@@ -1,0 +1,153 @@
+{% extends 'main_app/base.html' %}
+
+{% block title %}
+    Tracker
+{% endblock title %}
+
+{% block page_header_title %}
+    Tracker
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    <a href="" class="breadcrumb-item">Tracker</a>
+{% endblock breadcrumb %}
+
+{% block content_area %}
+<div class="card rounded-0">
+    <table class="table tasks-list">
+        <thead>
+            <tr>
+                <th>Last Screenshot</th>
+                <th>Name</th>
+                <th>Today</th>
+                <th>Yesterday</th>
+                <th>Week</th>
+                <th>Month</th>
+                <th class="text-center text-muted"><i class="ph-check"></i></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in user_data %}
+            <tr>
+                <td>
+                    {% if data.last_screenshot %}
+                        <img class="img-fluid clickable-image" src="{{ data.last_screenshot.image.url }}" alt="">
+                    {% else %}
+                        No screenshot
+                    {% endif %}
+                </td>
+                <td><a href="{% url 'user_screener' data.user.username %}">{{ data.user.username }}</a></td>
+                <td>{{ data.today_work_time }}</td>
+                <td>{{ data.yesterday_work_time }}</td>
+                <td>{{ data.week_work_time }}</td>
+                <td>{{ data.month_work_time }}</td>
+                <td class="text-center">
+                    <div class="dropdown">
+                        <a href="#" class="text-body" data-bs-toggle="dropdown">
+                            <i class="ph-list"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a href="#" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="ph-x me-2"></i> Remove</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .clickable-image {
+        cursor: pointer;
+    }
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 1); /* Черный фон с прозрачностью 0.7 */
+    }
+    .modal-dialog {
+        width: 1200px; /* фиксированная ширина */
+        max-width: none; /* Убираем максимальную ширину */
+    }
+    .arrow-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        padding: 15px;
+        cursor: pointer;
+        font-size: 24px;
+    }
+    .left-arrow {
+        left: -60px;
+    }
+    .right-arrow {
+        right: -60px;
+    }
+</style>
+
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img id="enlargedImage" src="" class="img-fluid" alt="Enlarged Screenshot">
+                <!-- Arrow buttons outside modal body -->
+                <button id="prevImage" class="arrow-btn left-arrow">&#8592;</button>
+                <button id="nextImage" class="arrow-btn right-arrow">&#8594;</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content_area %}
+
+{% block import_js %}
+    {% load static %}
+    
+	<script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+    <script src="{% static 'main_app/js/index_js/datatables.min.js' %}"></script>
+    <script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+    <script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+
+    <script>
+        const images = document.querySelectorAll('.clickable-image');
+        const modalImage = document.getElementById('enlargedImage');
+        const prevButton = document.getElementById('prevImage');
+        const nextButton = document.getElementById('nextImage');
+        let currentImageIndex = -1;
+    
+        // Show the clicked image in the modal
+        images.forEach((image, index) => {
+        image.addEventListener('click', function() {
+            currentImageIndex = index; // Save the clicked image index
+            const imgSrc = this.src;
+            modalImage.src = imgSrc;
+            const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            imageModal.show();
+        });
+        });
+    
+        // Function to update the image based on the current index
+        function updateImage() {
+        const imgSrc = images[currentImageIndex].src;
+        modalImage.src = imgSrc;
+        }
+    
+        // Navigate to the previous image (circular navigation)
+        prevButton.addEventListener('click', function() {
+        currentImageIndex = (currentImageIndex > 0) ? currentImageIndex - 1 : images.length - 1;
+        updateImage();
+        });
+    
+        // Navigate to the next image (circular navigation)
+        nextButton.addEventListener('click', function() {
+        currentImageIndex = (currentImageIndex < images.length - 1) ? currentImageIndex + 1 : 0;
+        updateImage();
+        });
+    </script>
+{% endblock import_js %}

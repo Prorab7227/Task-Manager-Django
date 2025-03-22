@@ -1,0 +1,77 @@
+{% extends "account/base.html" %}
+{% load form_tags %}
+{% load static %}
+
+{% block title %}
+    Sign In
+{% endblock title %}
+
+{% block content_area %}
+
+    <div class="content d-flex justify-content-center align-items-center">
+
+        <form class="login-form" action="{% url 'account_signin' %}" method="post">
+            {% csrf_token %}
+            <div class="card mb-0">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="d-inline-flex align-items-center justify-content-center mb-4 mt-2">
+                            <img src="{% static 'main_app/img/icons/favicon.jpg' %}" class="h-48px w-48px rounded-4" alt="">
+                        </div>
+                        <h5 class="mb-0">Login to your account</h5>
+                        <span class="d-block text-muted">Enter your credentials below</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <div class="form-control-feedback form-control-feedback-start">
+                            {{ form.login|add_params:"form-control text username" }}
+                            <div class="form-control-feedback-icon">
+                                <i class="ph-user-circle text-muted"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <div class="form-control-feedback form-control-feedback-start">
+                            {{ form.password|add_params:"form-control password •••••••••••" }}
+                            <div class="form-control-feedback-icon">
+                                <i class="ph-lock text-muted"></i>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary w-100">Sign in</button>
+                    </div>
+        
+                    <div class="text-center text-muted content-divider mb-3">
+                        <span class="px-2">or sign in with</span>
+                    </div>
+        
+                    <div class="text-center mb-3">
+                        <button type="button" class="btn btn-outline-primary btn-icon rounded-pill border-width-2"><i class="ph-facebook-logo"></i></button>
+                        <button type="button" class="btn btn-outline-pink btn-icon rounded-pill border-width-2 ms-2"><i class="ph-dribbble-logo"></i></button>
+                        <button type="button" class="btn btn-outline-secondary btn-icon rounded-pill border-width-2 ms-2"><i class="ph-github-logo"></i></button>
+                        <button type="button" class="btn btn-outline-info btn-icon rounded-pill border-width-2 ms-2"><i class="ph-twitter-logo"></i></button>
+                    </div>
+        
+                    <div class="text-center text-muted content-divider mb-3">
+                        <span class="px-2">Don't have an account?</span>
+                    </div>
+        
+                    <div class="mb-3">
+                        <a href="{% url 'account_signup' %}" class="btn btn-light w-100">Sign up</a>
+                    </div>
+        
+                    <span class="form-text text-center text-muted">
+                        By continuing, you're confirming that you've read our 
+                        <a href="#">Terms & Conditions</a> and <a href="#">Cookie Policy</a>.
+                    </span>
+                </div>
+            </div>
+        </form>        
+        
+    </div>
+{% endblock content_area %}

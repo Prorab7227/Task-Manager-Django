@@ -1,0 +1,28 @@
+{% extends "main_app/base.html" %}
+{% load static %}
+
+{% block title %}
+    Task Manager
+{% endblock title %}
+
+{% block page_header_title %}
+    Task Manager
+{% endblock page_header_title %}
+
+{% block content_area %}
+    <div class="flex-fill">
+
+        <div class="text-center mb-4">
+            <h1 class="display-3 fw-semibold lh-1 mb-3">500</h1>
+            <h6 class="w-md-25 mx-md-auto">{{message}}</h6>
+        </div>
+
+        <div class="text-center">
+            <a href="{% url 'index' %}" class="btn btn-primary">
+                <i class="ph-house me-2"></i>
+                Return to dashboard
+            </a>
+        </div>
+
+    </div>
+{% endblock content_area %}

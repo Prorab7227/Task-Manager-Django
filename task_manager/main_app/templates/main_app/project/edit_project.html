@@ -1,0 +1,127 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Edit Project
+{% endblock title %}
+
+{% block page_header_title %}
+    Edit Project: {{ project.name }}
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    {% if project.folder %}
+        <a href="{% url 'folder_projects' project.folder.slug %}" class="breadcrumb-item">{{ project.folder }}</a>
+    {% endif %}
+    <a href="{% url 'project_tasks' project.slug %}" class="breadcrumb-item">{{ project }}</a>
+{% endblock breadcrumb %}
+
+{% block content_area %}
+    <div class="card rounded-0">
+
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="row mb-2">
+                    <div class="col-lg-12">
+                        <div>
+                            <label class="form-label"><b>Project Name:</b></label>
+                            {{ project_form.name }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-lg-12">
+                        <div>
+                            <label class="form-label"><b>Project Description:</b></label>
+                            {{ project_form.description }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+
+                    <div class="col-lg-4">
+                        <div>
+                            <label class="form-label"><b>Deadline:</b><span class="form-text"> 'dd.mm.yyyy' in range [01.01.1990, 01.01.2030]</span></label>
+                            {{ project_form.deadline }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div>
+                            <label class="form-label"><b>Status:</b></label>
+                            {{ project_form.status }}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div>
+                            <label class="form-label"><b>Priority:</b></label>
+                            {{ project_form.priority }}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row mb-2">
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Folder:</b></label>
+                        {{ project_form.folder }}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Subfolder:</b></label>
+                        {{ project_form.subfolder }}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Client:</b></label>
+                        {{ project_form.client }}
+                    </div>
+                    
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Members:</b></label>
+                        {{ project_form.members }}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Assignee:</b></label>
+                        {{ project_form.assignee }}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label class="form-label"><b>Tag:</b></label>
+                        {{ project_form.tag }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col d-flex align-items-center">
+                        <a href="{% url 'project_detail' project.id %}">
+                            <button name="submit_button" class="btn btn-secondary">Back to project</button>
+                        </a>
+                        <button name="submit_button" type="submit" class="btn btn-primary ms-auto">
+                            Update Project <i class="ph-paper-plane-tilt ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/forms/form_multiselect.js' %}"></script>
+    <script src="{% static 'main_app/js/forms/bootstrap_multiselect.js' %}"></script>
+
+    <script src="{% static 'main_app/js/forms/ckeditor_classic.js' %}"></script>
+    <script src="{% static 'main_app/js/forms/editor_ckeditor_classic.js' %}"></script>
+{% endblock import_js %}

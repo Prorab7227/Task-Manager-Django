@@ -1,0 +1,70 @@
+{% include 'main_app/templates/priority_badge.html' with act_item=folder %}
+
+<div id="priority-dropdown-{{ act_item.id }}" class="dropdown-menu" style="display: none; position: absolute; z-index: 1000; width: auto; margin-top: 5px;">
+    <a href="#" class="dropdown-item" onclick="selectPriority({{ act_item.id }}, 'low')">
+        <i class="ph-battery-low me-2"></i>
+        <span class="badge bg-success bg-opacity-20 text-success me-3">Low</span>
+    </a>
+    <a href="#" class="dropdown-item" onclick="selectPriority({{ act_item.id }}, 'regular')">
+        <i class="ph-battery-medium me-2"></i>
+        <span class="badge bg-info bg-opacity-20 text-info me-3">Regular</span>
+    </a>
+    <a href="#" class="dropdown-item" onclick="selectPriority({{ act_item.id }}, 'high')">
+        <i class="ph-battery-full me-2"></i>
+        <span class="badge bg-danger bg-opacity-20 text-danger me-3">High</span>
+    </a>
+</div>
+
+<script>
+    function togglePriorityDropdown(act_itemId) {
+        var dropdown = document.getElementById("priority-dropdown-" + act_itemId);
+        var currentPriority = document.getElementById("priority-display-" + act_itemId);
+
+        // Toggle visibility of the dropdown
+        if (dropdown.style.display === "none") {
+            dropdown.style.display = "block";
+        } else {
+            dropdown.style.display = "none";
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!currentPriority.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = "none";
+            }
+        });
+    }
+
+    function selectPriority(act_itemId, newPriority) {
+        // Send AJAX request to update the priority
+        $.ajax({
+            url: "{% url 'folder_update_priority' 0 %}".replace('0', act_itemId),
+            type: 'POST',
+            data: {
+                'priority': newPriority,
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            success: function(response) {
+                // Update the displayed priority text and badge class
+                var priorityDisplay = document.getElementById("priority-display-" + act_itemId);
+                priorityDisplay.innerHTML = newPriority.charAt(0).toUpperCase() + newPriority.slice(1);
+                priorityDisplay.className = "badge " + getPriorityClass(newPriority);
+
+                var dropdown = document.getElementById("priority-dropdown-" + act_itemId);
+                dropdown.style.display = "none";
+            }
+        });
+    }
+
+    function getPriorityClass(priority) {
+        if (priority === 'low') {
+            return 'bg-success bg-opacity-20 text-success';
+        } else if (priority === 'regular') {
+            return 'bg-info bg-opacity-20 text-info';
+        } else if (priority === 'high') {
+            return 'bg-danger bg-opacity-20 text-danger';
+        } else {
+            return 'bg-secondary bg-opacity-20 text-secondary';
+        }
+    }
+</script>

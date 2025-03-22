@@ -1,0 +1,98 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Create Report
+{% endblock title %}
+
+{% block page_header_title %}
+    Create Report
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    {% if project %}
+        <a href="{% url 'project_list' %}" class="breadcrumb-item">Projects</a>
+        <a href="{% url 'project_tasks' project.slug %}" class="breadcrumb-item">{{ project }}</a>
+    {% endif %}
+    <a href="#" class="breadcrumb-item">Create Report</a>
+{% endblock breadcrumb %}
+
+{% block content_area %}
+
+    <div class="card rounded-0">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                <div class="row mb-3">
+                    <div class="col-lg-12">
+                        <div>
+                            <label class="form-label"><b>Text:</b></label>
+                            {{ form.text }}
+                            {% if form.text.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.text.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <div>
+                            <label class="form-label"><b>Link:</b></label>
+                            {{ form.link }}
+                            {% if form.link.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.link.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div>
+                            <label class="form-label"><b>Project:</b></label>
+                            {{ form.project }}
+                            {% if form.project.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.project.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <label for="id_file" class="form-label">Upload files</label>
+                    <input type="file" name="file" id="id_file" class="form-control" multiple>
+                </div>
+                <ul id="file-list" class="list-group"></ul>
+                <!-- Скрытое поле для хранения информации о загруженных файлах -->
+                <input type="hidden" id="uploaded-files" name="uploaded_files" value="[]">
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Create Report <i class="ph-paper-plane-tilt ms-2"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/forms/form_multiselect.js' %}"></script>
+    <script src="{% static 'main_app/js/forms/bootstrap_multiselect.js' %}"></script>
+
+    <script src="{% static 'main_app/js/forms/ckeditor_classic.js' %}"></script>
+    <script src="{% static 'main_app/js/forms/editor_ckeditor_classic.js' %}"></script>
+
+    <script src="{% static 'main_app/js/fetch_scripts/upload_files_project_report.js' %}"></script>
+{% endblock import_js %}

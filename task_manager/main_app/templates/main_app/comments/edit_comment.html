@@ -1,0 +1,52 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Edit Comment
+{% endblock title %}
+
+{% block page_header_title %}
+    Edit Comment
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    <a href="#" class="breadcrumb-item">Edit Comment</a>
+{% endblock breadcrumb %}
+
+
+{% block content_area %}
+    <div class="card rounded-0">
+        <div class="card-body">
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="row mb-2">
+                    <div class="col-lg-12">
+                        <div>
+                            <label class="form-label"><b>Text:</b></label>
+                            {{ comment_form.text }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-12">
+                        <div class="col d-flex align-items-center">
+                            <button name="submit_button" type="submit" class="btn btn-primary ms-auto">
+                                Submit <i class="ph-paper-plane-tilt ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/forms/ckeditor_classic.js' %}"></script>
+    <script src="{% static 'main_app/js/forms/editor_ckeditor_classic.js' %}"></script>
+{% endblock import_js %}

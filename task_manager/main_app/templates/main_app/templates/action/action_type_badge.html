@@ -1,0 +1,13 @@
+<span class="
+    {% if action_type == "create" %}
+        text-success
+    {% elif action_type == "update" %}
+        text-info
+    {% elif action_type == "delete" %}
+        text-danger
+    {% else %}
+        text-secondary
+    {% endif %}
+">
+    {{ action.action_type|capfirst }}
+</span>

@@ -1,0 +1,187 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Folder {{ folder }}
+{% endblock title %}
+
+{% block page_header_title %}
+    Folder {{ folder }}
+{% endblock page_header_title %}
+
+{% block user_in_project %}
+
+    {% if folder.assigned_users.all %}
+        {% for user in folder.assigned_users.all %}
+            <a href="{% url 'user_tasks' user.id %}">{{ user.username }}</a>
+            {% if not forloop.last %}&nbsp;{% endif %}
+        {% empty %}
+            <p>No assigned users</p>
+        {% endfor %}
+    {% endif %}
+
+{% endblock user_in_project %}
+
+{% block breadcrumb %}
+  <a href="{% url 'folder_list' %}" class="breadcrumb-item">Folders</a>
+  <a href="{% url 'folder_projects' folder.slug %}" class="breadcrumb-item">{{ folder }}</a>
+  <a href="{% url 'folder_projects' folder.slug %}" class="breadcrumb-item">Projects</a>
+  <a href="" class="breadcrumb-item">Files</a>
+{% endblock breadcrumb %}
+
+{% block add_some %}
+    <a href="{% url 'create_project' %}?folder={{folder.slug}}" class="ms-2">
+        <button class="btn btn-success">Add project</button>
+    </a>
+{% endblock add_some %}
+
+
+{% block content_area %}
+
+    <!-- Task manager table -->
+    <div class="card rounded-0">
+
+        <div class="card-header">
+            
+            <a href="{% url 'folder_projects' folder.slug %}" class="me-3">
+                <button class="btn btn-outline-secondary">Projects</button>
+            </a>
+
+            <a href="{% url 'folder_detail' folder.slug %}" class="me-3">
+                <button class="btn btn-outline-secondary">Folder info</button>
+            </a>
+
+            <a href="#">
+                <button id="files-btn" class="btn btn-success">Files</button>
+            </a>
+            
+        </div>
+
+        <table class="table tasks-list">
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>File</th>
+                    <th>Folder</th>
+                    <th>Client</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Modified</th>
+                    <th>Members</th>
+                    <th>Deadline</th>
+                    <th>Created</th>
+                    <th>Owner</th>
+                    <th>Assignee</th>
+                    <th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% comment %} Task List {% endcomment %}
+                {% for task_file in tasks_files %}
+                    <tr>
+                        <td>
+                            <div class="fw-semibold"><a href="{% url "project_tasks" task_file.task.project.slug %}">{{ task_file.task.project.name|truncatechars:25 }}</a></div>
+                        </td>
+
+                        <td>
+                            <a href="{{task_file.file}}" download>{{task_file.name}}</a>
+                        </td>
+            
+                        <td>
+                            {% if task_file.task.project.folder %}
+                                <div class="fw-semibold"><a href="{% url 'folder_projects' task_file.task.project.folder.slug %}">{{ task_file.task.project.folder|truncatechars:25 }}</a></div>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+            
+                        <td>
+                            {{ task_file.task.project.client|default:"-" }}
+                        </td>
+            
+                        <td>
+                            {% include 'main_app/templates/priority_badge.html' with act_item=task_file.task.project %}
+                        
+                            {% include 'main_app/templates/task/task_priority_dropdown.html' with act_item=task_file.task.project %}
+                        </td>
+            
+                        <td>
+                            {% include 'main_app/templates/status_badge.html' with act_item=task_file.task.project %}
+                        
+                            {% include 'main_app/templates/task/task_status_dropdown.html' with act_item=task_file.task.project %}
+                        </td>
+            
+                        <td>
+                            {{ task_file.task.project.last_modified|date:"d.m.Y"|default:"-" }}
+                        </td>
+            
+                        <td>
+                            {% if task_file.task.project.members.exists %}
+                                <div>
+                                {% for user in task_file.task.project.members.all|slice:":2" %}
+                                    <a href="{% url 'user_tasks' user.username %}">{{ user.username }}{% if not forloop.last %}, {% endif %}</a>
+                                {% endfor %}
+                                </div>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+            
+                        <td>
+                            {{ task_file.task.project.deadline|date:"d.m.Y"|default:"-" }}
+                        </td>
+            
+                        <td>
+                            {{ task_file.task.project.created|date:"d.m.Y"|default:"-" }}
+                        </td>
+            
+                        <td>
+                            <a href="{% url 'user_tasks' task_file.task.project.owner.username %}">{{ task_file.task.project.owner }}</a>
+                        </td>
+
+                        <td>
+                            {% if project.assignee %}
+                                <a href="{% url 'user_tasks' task_file.task.project.assignee.username %}">{{ task_file.task.project.assignee }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        
+                        <td class="text-center">
+                            <div class="dropdown">
+                                <a href="#" class="text-body" data-bs-toggle="dropdown">
+                                    <i class="ph-list"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    {% comment %} <div class="dropdown-divider"></div> {% endcomment %}
+                                    <a href="{% url 'edit_project' task_file.task.project.slug %}" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>
+                                    <form method="post" action="{% url 'delete_project' task_file.task.project.slug %}" onsubmit="return confirm('Are you sure you want to delete project - {{task_file.project}}?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="ph-x me-2"></i>Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+    <!-- /task manager table -->
+    
+{% endblock content_area %}
+
+{% block import_js %}
+    <script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+
+    <script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+    <script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+
+    <script src="{% static 'main_app/js/index_js/custom_type.js' %}"></script>
+    <script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+{% endblock import_js %}

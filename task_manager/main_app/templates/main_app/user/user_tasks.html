@@ -1,0 +1,160 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+	{{user.username}} Tasks
+{% endblock title %}
+
+{% block page_header_title %}
+	{{user.username}} Tasks
+{% endblock page_header_title %}
+
+{% block sub_users %}
+	<ul class="nav-group-sub collapse {% if '/user/' in request.path %}show{% endif %}">
+		<li class="nav-item">
+			<a href="{% url 'user_tasks' user.username %}" class="nav-link">
+				<i class="ph-kanban"></i>
+				Tasks
+			</a>
+		</li>
+		<li class="nav-item">
+			<a href="{% url 'user_projects_2' user.username %}" class="nav-link">
+				<i class="ph-article"></i>
+				Projects
+			</a>
+		</li>
+		<li class="nav-item">
+			<a href="{% url 'user_projects_1' user.username %}" class="nav-link">
+				<i class="ph-chart-line"></i>
+				Statistics
+			</a>
+		</li>
+	</ul>
+{% endblock sub_users %}
+
+{% block add_some %}
+	<a href="{% url 'create_task' %}?user={{ user.id }}" class="btn btn-success ms-2">
+		Add task to user
+	</a>
+{% endblock add_some %}
+
+{% block content_area %}
+	<div class="card">
+		<table class="table tasks-list">
+			<thead>
+				<tr>
+					<th>User</th>
+					<th>Folder</th>
+					<th>Subfolder</th>
+					<th>Client</th>
+					<th>Project</th>
+					<th>Task</th>
+					<th>Assignee</th>
+					<th>Status</th>
+					<th>Priority</th>
+					<th>Deadline</th>
+					<th class="text-center text-muted" style="width: 30px;">
+						<i class="ph-check"></i>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for task in tasks %}
+				<tr>
+
+				<td>
+					<div class="d-flex gap-2 align-items-center">
+					<img src="{% static 'main_app/img/users/face11.jpg' %}" width="36" height="36" class="rounded-pill" alt="">
+					<div>
+						{{ user.username }}<br><span class="fs-sm opacity-50">glushka</span>
+					</div>
+					</div>
+				</td>
+
+				<td>
+					{% if task.project.folder %}
+					<a class="fw-semibold" href="{% url "folder_projects" task.project.folder.slug %}">{{ task.project.folder }}</a>
+					{% else %}
+					<div class="fw-semibold">-</div>
+					{% endif %}
+				</td>
+
+				<td>
+					{% if task.project.subfolder %}
+					<a class="fw-semibold" href="{% url "folder_projects" task.project.subfolder.slug %}">{{ task.project.subfolder }}</a>
+					{% else %}
+					<div class="fw-semibold">-</div>
+					{% endif %}
+				</td>
+
+				<td>
+					{{ task.project.client|default:"-" }}
+				</td>
+
+				<td>
+					{% if task.project %}
+					<a class="fw-semibold" href="{% url "project_tasks" task.project.slug %}">{{ task.project }}
+					{% else %}
+					-
+					{% endif %}
+				</td>
+
+				<td>
+					<a class="fw-semibold" href="{% url "task_detail" task.slug %}">{{ task.title }}</a>
+				</td>
+
+				<td>
+					{% if task.assignee %}
+					<a href="{% url 'user_tasks' task.assignee.username %}">{{ task.assignee }}</a>
+					{% else %}
+					-
+					{% endif %}
+				</td>
+
+				<td>
+					{% include 'main_app/templates/task/task_status_dropdown.html' with act_item=task %}
+				</td>
+
+				<td>
+					{% include 'main_app/templates/task/task_priority_dropdown.html' with act_item=task %}
+				</td>
+				
+				<td>
+					<div>
+					{{ task.deadline|date:"d.m.Y"|default:"-" }}
+					</div>
+				</td>
+
+				<td class="text-center">
+					<div class="dropdown">
+					<a href="#" class="text-body" data-bs-toggle="dropdown">
+						<i class="ph-list"></i>
+					</a>
+					<div class="dropdown-menu dropdown-menu-end">
+						{% comment %} <div class="dropdown-divider"></div> {% endcomment %}
+						<a href="{% url 'edit_task' task.slug %}" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit task</a>
+						<form method="post" action="{% url 'delete_task' task.slug %}" onsubmit="return confirm('Are you sure you want to delete task - {{task}}?');">
+						{% csrf_token %}
+						<button type="submit" class="dropdown-item">
+							<i class="ph-x me-2"></i>Remove
+						</button>
+						</form>
+					</div>
+					</div>
+				</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock content_area %}
+
+{% block import_js %}
+	<script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+	<script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/custom_type.js' %}"></script>
+	<script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+{% endblock import_js %}

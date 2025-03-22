@@ -1,0 +1,37 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+	Projects
+{% endblock title %}
+
+{% block page_header_title %}
+	Projects
+{% endblock page_header_title %}
+
+{% block breadcrumb %}								
+	<a href="{% url 'project_list' %}" class="breadcrumb-item">Projects</a>
+{% endblock breadcrumb %}
+
+{% block add_some %}
+	<a href="{% url "create_project" %}" class="btn btn-success btn-icon w-135px h-32px ms-2">
+		<span class="me-1">Create Project</span>
+		<i class="ph-plus"></i>
+	</a>
+{% endblock add_some %}
+
+{% block content_area %}
+	<div class="card rounded-0">
+		{% include 'main_app/project/project_table_template.html' with projects=projects %}
+	</div>
+{% endblock content_area %}
+
+{% block import_js %}    
+	<script src="{% static 'main_app/js/index_js/task_manager_list.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/datatables.min.js' %} "></script>
+	<script src="{% static 'main_app/js/index_js/natural_sort.js' %}"></script>
+
+	<script src="{% static 'main_app/js/index_js/custom_type.js' %}"></script>
+	<script src="{% static 'main_app/js/index_js/custom_view.js' %}"></script>
+{% endblock import_js %}

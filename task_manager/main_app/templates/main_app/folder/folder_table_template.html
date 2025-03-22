@@ -1,0 +1,89 @@
+<table class="table tasks-list">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Client</th>
+			<th>Priority</th>  
+			<th>Status</th>             
+			<th>Modified</th>
+			<th>Members</th>
+			<th>Created</th>
+			<th>Owner</th>
+			<th>Assignee</th>
+			<th class="text-center text-muted" style="width: 30px;"><i class="ph-check"></i></th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for folder in folders %}
+			<tr>
+			<td>
+				<div class="fw-semibold"><a href="{% url "folder_projects" folder.slug %}">{{ folder.name|truncatechars:70 }}</a></div>
+			</td>
+
+			<td>
+				<a href="{% url 'client_projects' folder.client %}">{{folder.client|default:"-"}}</a>
+			</td>
+
+			<td>
+				{% include 'main_app/templates/folder/folder_priority_dropdown.html' with act_item=folder %}
+			</td>
+
+			<td>
+				{% include 'main_app/templates/folder/folder_status_dropdown.html' with act_item=folder %}
+			</td>
+
+			<td>
+				{{ folder.last_modified|date:"d.m.Y"|default:"-" }}
+			</td>
+
+			<td>
+				{% if folder.members.exists %}
+				<div>
+					{% for user in folder.members.all %}
+					<a href="{% url 'user_tasks' user.username %}">{{ user.username }}{% if not forloop.last %}, {% endif %}</a>
+					{% endfor %}
+				</div>
+				{% else %}
+				-
+				{% endif %}
+			</td>
+
+			<td>
+				{{ folder.created|date:"d.m.Y"|default:"-" }}
+			</td>
+			
+			<td>
+				<a href="{% url 'user_tasks' folder.owner %}">{{ folder.owner }}</a>
+			</td>
+
+			<td>
+				{% if folder.assignee %}
+					<a href="{% url 'user_tasks' folder.assignee %}">{{ folder.assignee }}</a>
+				{% else %}
+					-
+				{% endif %}
+			</td>
+
+			<td class="text-center">
+				<div class="dropdown">
+				<a href="#" class="text-body" data-bs-toggle="dropdown">
+					<i class="ph-list"></i>
+				</a>
+				<div class="dropdown-menu dropdown-menu-end">
+					{% comment %} <div class="dropdown-divider"></div> {% endcomment %}
+					<a href="{% url 'edit_folder' folder.slug %}" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit folder</a>
+					<form method="post" action="{% url 'delete_folder' folder.slug %}" onsubmit="return confirm('Are you sure you want to delete folder - {{folder}}?');">
+					{% csrf_token %}
+					<button type="submit" class="dropdown-item">
+						<i class="ph-x me-2"></i>Remove
+					</button>
+					</form>
+				</div>
+				</div>
+			</td>
+
+			</tr>
+		{% endfor %}
+
+	</tbody>
+</table>

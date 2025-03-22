@@ -1,0 +1,149 @@
+{% extends 'main_app/base.html' %}
+{% load static %}
+
+{% block title %}
+    Tracker
+{% endblock title %}
+
+{% block page_header_title %}
+    Tracker
+{% endblock page_header_title %}
+
+{% block breadcrumb %}
+    <a href="{% url 'screener' %}" class="breadcrumb-item">Tracker</a>
+    <a href="#" class="breadcrumb-item">{{user.username}}</a>
+{% endblock breadcrumb %}
+
+{% block content_area %}
+    <form method="get" action="{% url 'user_screener' user.username %}">
+        <div class="d-flex gap-3 justify-content-center align-items-center mb-3">
+            <label for="work-time" class="me-2">Total work time: {{ total_work_time }}</label>
+            <input type="date" class="form-control w-25" id="date" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+
+            <input type="time" class="form-control w-25" id="start_time" name="start_time" value="{{ start_time }}">
+            <input type="time" class="form-control w-25" id="end_time" name="end_time" value="{{ end_time }}">
+
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </form>
+
+    <div class="row" id="screenshots-container">
+        {% for screenshot in screenshots %}
+            <div class="col-sm-6 col-xl-3 screenshot-card">
+                <div class="card">
+                    <div class="card-img-actions mx-1 mt-1">
+                        <img class="img-fluid clickable-image" src="{{ screenshot.image.url }}" alt="">
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <h6 class="fw-semibold">{{ screenshot.created|date:"Y-m-d H:i:s" }}</h6>
+                            <form action="{% url 'delete_screenshot' screenshot.id %}" method="post" onsubmit="return confirm('Вы уверены, что хотите удалить скриншот?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link text-danger p-0">
+                                    <i class="ph-trash"></i>
+                                </button>
+                            </form>
+                            {% comment %} {% if request.user.is_superuser %}
+                                <form action="{% url 'delete_screenshot' screenshot.id %}" method="post" onsubmit="return confirm('Вы уверены, что хотите удалить скриншот?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-link text-danger p-0">
+                                        <i class="ph-trash"></i>
+                                    </button>
+                                </form>
+                            {% endif %} {% endcomment %}
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>No screenshots found for this date and time range.</p>
+        {% endfor %}
+    </div>
+
+    <style>
+        .clickable-image {
+            cursor: pointer;
+        }
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 1); /* Черный фон с прозрачностью 0.7 */
+        }
+        .modal-dialog {
+            width: 1200px; /* фиксированная ширина */
+            max-width: none; /* Убираем максимальную ширину */
+        }
+        .arrow-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 15px;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        .left-arrow {
+            left: -60px;
+        }
+        .right-arrow {
+            right: -60px;
+        }
+    </style>
+
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="enlargedImage" src="" class="img-fluid" alt="Enlarged Screenshot">
+                    <!-- Arrow buttons outside modal body -->
+                    <button id="prevImage" class="arrow-btn left-arrow">&#8592;</button>
+                    <button id="nextImage" class="arrow-btn right-arrow">&#8594;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content_area %}
+
+{% block import_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const images = document.querySelectorAll('.clickable-image');
+        const modalImage = document.getElementById('enlargedImage');
+        const prevButton = document.getElementById('prevImage');
+        const nextButton = document.getElementById('nextImage');
+        let currentImageIndex = -1;
+
+        // Show the clicked image in the modal
+        images.forEach((image, index) => {
+            image.addEventListener('click', function() {
+            currentImageIndex = index; // Save the clicked image index
+            const imgSrc = this.src;
+            modalImage.src = imgSrc;
+            const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            imageModal.show();
+            });
+        });
+
+        // Function to update the image based on the current index
+        function updateImage() {
+            const imgSrc = images[currentImageIndex].src;
+            modalImage.src = imgSrc;
+        }
+
+        // Navigate to the previous image (circular navigation)
+        prevButton.addEventListener('click', function() {
+            currentImageIndex = (currentImageIndex > 0) ? currentImageIndex - 1 : images.length - 1;
+            updateImage();
+        });
+
+        // Navigate to the next image (circular navigation)
+        nextButton.addEventListener('click', function() {
+            currentImageIndex = (currentImageIndex < images.length - 1) ? currentImageIndex + 1 : 0;
+            updateImage();
+        });
+        });
+    </script> 
+{% endblock import_js %}
