@@ -42,7 +42,12 @@
                     {{ comment_form.text }}
                 </div>
             
-                {% include "main_app/task/task_upload_form_template.html" %}
+                <div class="mb-2">
+                    <label for="id_file" class="form-label">Upload files</label>
+                    <input type="file" name="file" id="id_file" class="form-control" multiple>
+                </div>
+                <ul id="file-list" class="list-group"></ul>
+                <input type="hidden" id="uploaded-files" name="uploaded_files" value="[]">
             
                 <div class="d-flex">
                     <button type="submit" class="btn btn-primary ms-auto">
@@ -197,7 +202,7 @@
                 <div class="mb-2">
                     <textarea name="text" class="form-control" placeholder="Write your reply here..." required></textarea>
                 </div>
-                {% include "main_app/task/task_upload_form_template.html" %}
+                {% include "main_app/templates/upload_form_template.html" %}
                 <div class="d-flex">
                     <button type="submit" class="btn btn-primary ms-auto">
                         Submit

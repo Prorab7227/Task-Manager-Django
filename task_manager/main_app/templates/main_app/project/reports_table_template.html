@@ -69,7 +69,10 @@
                             <i class="ph-list"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end">
-                            <a href="" class="dropdown-item"><i class="ph-pencil me-2"></i> Edit report</a>
+                            <a href="{% url 'edit_project_report' item.id %}" class="dropdown-item">
+                                <i class="ph-pencil me-2"></i> Edit report
+                            </a>
+                            <form method="post" action="{% url 'delete_report' item.id %}" onsubmit="return confirm('Are you sure you want to delete report - {{item.project}} - {{item.created|date:"d.m.Y H:i:s"}}?');">
                                 {% csrf_token %}
                                 <button type="submit" class="dropdown-item">
                                     <i class="ph-x me-2"></i>Remove

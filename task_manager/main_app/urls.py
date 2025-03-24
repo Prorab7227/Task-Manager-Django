@@ -70,6 +70,7 @@ urlpatterns = [
 
     path('create/project', views.create_project, name='create_project'),
     path('create/project-report', views.project_create_report, name='project_create_report'),
+    path('edit/project-report/<int:project_report_id>', views.edit_project_report, name='edit_project_report'),
 
     path('project/<str:project_slug>/edit/', views.edit_project, name='edit_project'),
     path('project/<str:project_slug>/', views.project_detail, name='project_detail'),

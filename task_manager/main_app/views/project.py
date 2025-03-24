@@ -587,9 +587,8 @@ def project_create_report(request):
                 return redirect('project_list_reports')
 
     else:
-        form = ProjectReportForm(initial={
-            'project':project if project else None,
-            }
+        form = ProjectReportForm(
+            initial={'project':project if project else None,}
         )
 
     context = {
@@ -599,6 +598,18 @@ def project_create_report(request):
 
     return render(request, 'main_app/project/create_project_report.html', context)
 
+def edit_project_report(request, project_report_id):
+    project_report = get_object_or_404(ProjectReport, id=project_report_id)
+
+    if request.method == "POST":
+        form = ProjectReportForm(request.POST, request.FILES, instance=project_report)
+        if form.is_valid():
+            form.save()
+            return redirect('project_list_reports')
+    else:
+        form = ProjectReportForm(instance=project_report)
+
+    return render(request, 'main_app/project/create_project_report.html', {'form': form})
 
 @login_required
 def delete_report(request, report_id):
