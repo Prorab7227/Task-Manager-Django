@@ -85,14 +85,7 @@
 
                 <div class="row mb-3">
                     <div class="col-lg-8">
-                        <div class="mb-2">
-                            <label for="id_file" class="form-label">Upload files</label>
-                            <input type="file" name="file" id="id_file" class="form-control" multiple>
-                        </div>
-                        <ul id="file-list" class="list-group"></ul>
-                        <!-- Скрытое поле для хранения информации о загруженных файлах -->
-                        <input type="hidden" id="uploaded-files" name="uploaded_files" value="[]">
-                        <ul id="file-list" class="list-group"></ul>
+                        {% include "main_app/task/task_upload_form_template.html" %}
                     </div>
 
                     <div class="col-lg-4">

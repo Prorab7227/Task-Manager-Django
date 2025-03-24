@@ -235,35 +235,47 @@ def delete_task_file(request, file_id):
 @login_required
 def task_comments(request, task_slug):
     task = get_object_or_404(Task, slug=task_slug)
-    task_comments = TaskComment.objects.filter(task=task).filter(Q(author=request.user) | Q(approved=True)).order_by('-created')
+    task_comments = TaskComment.objects.filter(
+        task=task
+    ).filter(
+        (Q(author=request.user) | Q(approved=True)) &
+        Q(replied_for__isnull=True)
+    ).order_by('-created')
 
     if request.method == 'POST':
-        # Check if the ID comment is handed over for deleting
+        # Проверка, если передан ID комментария для удаления
         if 'delete_comment_id' in request.POST:
             comment_id = request.POST.get('delete_comment_id')
             comment = get_object_or_404(TaskComment, id=comment_id, task=task)
 
-            # Deletion is allowed only to the author of the comment or administrator
+            # Удаление разрешено только автору комментария или администратору
             if request.user == comment.author or request.user.is_superuser:
                 comment.delete()
             else:
                 return HttpResponseForbidden("You do not have permission to delete this comment.")
-            return redirect('task_comments', task_slug=task.slug)  # Redirect to the same page
+            return redirect('task_comments', task_slug=task.slug)
 
-        # Processing the addition of a new comment
+        # Обработка добавления нового комментария или ответа
         comment_form = TaskCommentForm(request.POST)
         if comment_form.is_valid():
             comment = comment_form.save(commit=False)
             comment.author = request.user
             comment.task = task
+
+            # Проверка на наличие комментария, на который отвечают
+            replied_comment_id = request.POST.get('replied_comment_id')
+            if replied_comment_id:
+                replied_comment = get_object_or_404(TaskComment, id=replied_comment_id)
+                comment.replied_for = replied_comment
+
             comment.save()
 
-            # Process pre-uploaded files
+            # Обработка предварительно загруженных файлов
             uploaded_files_json = request.POST.get('uploaded_files', '[]')
             try:
                 uploaded_files = json.loads(uploaded_files_json)
                 
-                # Create TaskCommentFile objects for each pre-uploaded file
+                # Создание объектов TaskCommentFile для каждого загруженного файла
                 for file_data in uploaded_files:
                     TaskCommentFile.objects.create(
                         name=file_data['name'],
@@ -273,7 +285,7 @@ def task_comments(request, task_slug):
                         size=file_data['size']
                     )
             except json.JSONDecodeError:
-                # Skip file creation if JSON parsing fails
+                # Пропуск создания файлов, если произошла ошибка парсинга JSON
                 pass
 
             return redirect('task_comments', task_slug=task.slug)
@@ -281,9 +293,9 @@ def task_comments(request, task_slug):
             print(comment_form.errors)
 
     else:
-        comment_form = ProjectCommentForm()
+        comment_form = TaskCommentForm()
 
-    # Check: current user is assigned to the project
+    # Проверка: текущий пользователь назначен на задачу
     if not request.user.is_superuser:
         if request.user not in task.members.all() and request.user != task.assignee and request.user != task.owner:
             return render(request, 'main_app/errors/access_denied.html')

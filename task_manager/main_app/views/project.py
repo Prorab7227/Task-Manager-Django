@@ -558,7 +558,8 @@ def project_create_report(request):
         if form.is_valid():
             report = form.save(commit=False)
             report.author = request.user
-            report.project = project
+            if project:
+                report.project = project
             report.save()
             
             # Process pre-uploaded files
@@ -580,7 +581,10 @@ def project_create_report(request):
                 pass
 
             # Перенаправление на страницу отчетов проекта
-            return redirect('project_reports', project_slug=project.slug)
+            if project:
+                return redirect('project_reports', project_slug=project.slug)
+            else:
+                return redirect('project_list_reports')
 
     else:
         form = ProjectReportForm(initial={

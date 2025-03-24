@@ -36,22 +36,13 @@
         </div>
 
         <div class="card-body">
-
             <form id="file-upload-form" method="post" enctype="multipart/form-data" action="{% url 'task_comments' task.slug %}" novalidate>
                 {% csrf_token %}
                 <div class="mb-2">
                     {{ comment_form.text }}
                 </div>
             
-                <div class="mb-2">
-                    <div class="mb-2">
-                        <label for="id_file" class="form-label">Upload files</label>
-                        <input type="file" name="file" id="id_file" class="form-control" multiple>
-                    </div>
-                    <ul id="file-list" class="list-group"></ul>
-                    <!-- Скрытое поле для хранения информации о загруженных файлах -->
-                    <input type="hidden" id="uploaded-files" name="uploaded_files" value="[]">
-                </div>
+                {% include "main_app/task/task_upload_form_template.html" %}
             
                 <div class="d-flex">
                     <button type="submit" class="btn btn-primary ms-auto">
@@ -60,7 +51,7 @@
                     </button>
                 </div>
             </form>
-
+        
             {% if comment_form.errors %}
                 <div class="alert alert-danger mt-3">
                     {% for field, errors in comment_form.errors.items %}
@@ -73,34 +64,30 @@
                     {% endfor %}
                 </div>
             {% endif %}
-
+        
             <hr>
-
+        
             {% for comment in task_comments %}
-                <div class="d-flex flex-column flex-lg-row mb-3">
+                <div class="d-flex flex-column flex-lg-row mb-3 {% if comment.replied_for %}border-start border-3 ps-3{% endif %}">
                     <div class="me-lg-3 mb-2 mb-lg-0">
                         <a href="#">
                             <img src="{% static 'main_app/img/users/face24.jpg' %}" width="40" height="40" alt="">
                         </a>
                     </div>
-
+        
                     <div class="flex-fill">
                         <a href="{% url 'user_tasks' comment.author.username %}" class="fw-semibold">{{ comment.author.username }}</a>
                         <span class="fs-sm text-muted ms-3">{{ comment.created|timesince }} ago</span>
-
+        
                         <p>{{ comment.text|safe }}</p>
-
+        
                         <ul class="list-inline mb-0">
                             <li class="list-inline-item d-inline-flex align-items-center">
                                 <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>
                                 0
                             </li>
                             <li class="list-inline-item">
-                                <form method="post" action="{% url 'task_comments' task_slug=task.slug %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="" value="{{ comment.id }}">
-                                    <button type="submit" class="btn btn-link text-primary p-0">Reply</button>
-                                </form>
+                                <button type="button" class="btn btn-link text-primary p-0 reply-btn" data-comment-id="{{ comment.id }}">Reply</button>
                             </li>
                             <li class="list-inline-item">
                                 <form method="post" action="{% url 'task_comments' task_slug=task.slug %}">
@@ -117,7 +104,7 @@
                                 </form>
                             </li>
                         </ul>
-
+        
                         {% if comment.task_comment_files.all %}
                             <div class="card mt-2">
                                 <div class="card-header">
@@ -130,7 +117,7 @@
                                         </button>
                                     {% endif %}
                                 </div>
-
+        
                                 <div class="card-body attached-files-container" data-comment-id="{{ comment.id }}">
                                     {% for comment_file in comment.task_comment_files.all %}
                                         <div class="d-flex align-items-start mb-4 border-bottom file-item {% if forloop.counter > 2 %}d-none{% endif %}">
@@ -153,32 +140,41 @@
                                 </div>
                             </div>
                         {% endif %}
-
+        
                         <!-- Вложенные ответы -->
-                        <div class="replies ms-4">
-                            {% for reply in comment.replied_for.all %}
-                            <div class="d-flex flex-column flex-lg-row mb-3">
+                        <div class="replies">
+                            {% for reply in comment.replies.all %}
+                            <div class="d-flex flex-column flex-lg-row mt-3">
                                 <div class="me-lg-3 mb-2 mb-lg-0">
                                     <a href="#">
-                                        <img src="{{ reply.author.profile.avatar_url|default:'/path/to/default-avatar.jpg' }}" class="rounded-circle" width="40" height="40" alt="">
+                                        <img src="{% static 'main_app/img/users/face24.jpg' %}" width="40" height="40" alt="">
                                     </a>
                                 </div>
-
+        
                                 <div class="flex-fill">
                                     <a href="#" class="fw-semibold">{{ reply.author.username }}</a>
                                     <span class="fs-sm text-muted ms-3">{{ reply.created|timesince }} ago</span>
-
+        
                                     <p>{{ reply.text }}</p>
-
+        
                                     <ul class="list-inline mb-0">
                                         <li class="list-inline-item d-inline-flex align-items-center">
                                             <a href="#" class="lh-1 me-2"><i class="ph-thumbs-up text-success"></i></a>
-                                        </li>
-                                        <li class="list-inline-item ms-2">
-                                            <a href="#">Reply</a>
+                                            0
                                         </li>
                                         <li class="list-inline-item">
-                                            <a href="#">Edit</a>
+                                            <form method="post" action="{% url 'task_comments' task_slug=task.slug %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="" value="{{ reply.id }}">
+                                                <button type="submit" class="btn btn-link text-primary p-0">Edit</button>
+                                            </form>
+                                        </li>
+                                        <li class="list-inline-item">
+                                            <form method="post" action="{% url 'task_comments' task_slug=task.slug %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="delete_comment_id" value="{{ reply.id }}">
+                                                <button type="submit" class="btn btn-link text-primary p-0" onclick="return confirm('Are you sure you want to delete this reply?');">Delete</button>
+                                            </form>
                                         </li>
                                     </ul>
                                 </div>
@@ -192,6 +188,39 @@
                 <p>No comments available for this task.</p>
             {% endfor %}
         </div>
+        
+        <!-- Форма для ответа на комментарий -->
+        <div id="reply-form-template" class="d-none">
+            <form class="reply-form" method="post" enctype="multipart/form-data" action="{% url 'task_comments' task.slug %}" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="replied_comment_id" value="">
+                <div class="mb-2">
+                    <textarea name="text" class="form-control" placeholder="Write your reply here..." required></textarea>
+                </div>
+                {% include "main_app/task/task_upload_form_template.html" %}
+                <div class="d-flex">
+                    <button type="submit" class="btn btn-primary ms-auto">
+                        Submit
+                        <i class="ph-paper-plane-tilt ms-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- JavaScript для отображения формы ответа -->
+        <script>
+            document.querySelectorAll('.reply-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const commentId = this.getAttribute('data-comment-id');
+                    const formTemplate = document.getElementById('reply-form-template').cloneNode(true);
+                    formTemplate.classList.remove('d-none');
+                    formTemplate.querySelector('input[name="replied_comment_id"]').value = commentId;
+        
+                    const repliesContainer = this.closest('.list-inline').parentNode.querySelector('.replies');
+                    repliesContainer.appendChild(formTemplate);
+                });
+            });
+        </script>          
     </div>
 
     <script>
