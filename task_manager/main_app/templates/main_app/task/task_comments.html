@@ -24,7 +24,7 @@
 
 {% block content_area %}
 
-    <div class="card rounded-0">
+    <div class="card">
         <div class="card-header">                
             <a href="{% url 'task_detail' task.slug %}" class="me-3">
                 <button class="btn btn-outline-secondary">Task info</button>
@@ -232,7 +232,7 @@
                     repliesContainer.appendChild(formTemplate);
                 });
             });
-        </script>          
+        </script>
     </div>
 
     <script>

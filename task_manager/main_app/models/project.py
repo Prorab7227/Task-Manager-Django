@@ -66,7 +66,7 @@ class ProjectComment(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='comments', verbose_name='Project')
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name='Author')
     text = models.TextField(blank=True, null=True, verbose_name='Text')
-    replied_for = models.ForeignKey('ProjectComment', on_delete=models.CASCADE, null=True, verbose_name='Replied')
+    replied_for = models.ForeignKey('ProjectComment', on_delete=models.CASCADE, null=True, related_name='replies', verbose_name='Replied')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Created')
     read_by = models.ManyToManyField(User, blank=True, related_name='read_project_comments')
 

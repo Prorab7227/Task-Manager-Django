@@ -457,7 +457,12 @@ def project_tasks_files(request, project_slug):
 def project_comments(request, project_slug):
     set_current_user(request.user)
     project = get_object_or_404(Project, slug=project_slug)
-    project_comments = ProjectComment.objects.filter(project=project).filter(Q(author=request.user) | Q(approved=True)).order_by('-created')
+    project_comments = ProjectComment.objects.filter(
+        project=project
+    ).filter(
+        (Q(author=request.user) | Q(approved=True)) &
+        Q(replied_for__isnull=True)
+    ).order_by('-created')
 
     if request.method == 'POST':
         if 'delete_comment_id' in request.POST:
@@ -475,6 +480,13 @@ def project_comments(request, project_slug):
             comment = comment_form.save(commit=False)
             comment.author = request.user
             comment.project = project
+
+            # Проверка на наличие комментария, на который отвечают
+            replied_comment_id = request.POST.get('replied_comment_id')
+            if replied_comment_id:
+                replied_comment = get_object_or_404(ProjectComment, id=replied_comment_id)
+                comment.replied_for = replied_comment
+
             comment.save()
 
             # Process pre-uploaded files
