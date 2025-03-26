@@ -5,18 +5,39 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Q, Count
 from itertools import chain
 
+import time
+
+STATUS_CHOICE = [
+    'new',
+    'working',
+    'done',
+    'closed',
+    'pause',
+    'archive'
+]
+
+PRIORITY_CHOICE = [
+    'high',
+    'regular',
+    'low'
+]
+
 @login_required
 def index(request):
-    exclude_archive = Q(project__status='archive') | Q(project__folder__status='archive')
+    start_time = time.time()
 
-    if request.user.is_superuser:
-        tasks = Task.objects.exclude(exclude_archive).order_by("-id")
-    else:
-        tasks = Task.objects.filter(
-            Q(project__owner=request.user) |
-            Q(assignee=request.user) |
-            Q(members=request.user)
-        ).exclude(exclude_archive).distinct().order_by("-id")
+    exclude_archive = Q(project__status='archive') | Q(project__folder__status='archive')
+    user_perm = Q(project__owner=request.user) | Q(assignee=request.user) | Q(members=request.user)
+
+    tasks = []
+    for status in STATUS_CHOICE:
+        for priority in PRIORITY_CHOICE:
+            if request.user.is_superuser:
+                tasks += Task.objects.filter(status=status, priority=priority).exclude(exclude_archive).order_by("-id")
+            else:
+                tasks += Task.objects.filter(user_perm).filter(status=status, priority=priority).exclude(exclude_archive).distinct().order_by("-id")
+
+    print(round(time.time() - start_time, 5))
 
     return render(request, 'main_app/index.html', {'tasks': tasks})
 

@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title>{% block title %}{% endblock title %}</title>
+	<title>{% block title %}Atoms{% endblock title %}</title>
 
 	<link rel="icon" href="{% static 'main_app/img/icons/favicon.jpg' %}" type="image/x-icon">
 
@@ -58,7 +58,7 @@
 								<div class="text-center w-32px me-3">
 									<i class="ph-magnifying-glass"></i>
 								</div>
-								<span>Search <span class="fw-bold">"in"</span> everywhere</span>
+								<span>Search</span>
 							</button>
 
 							<div class="dropdown-divider"></div>
@@ -73,37 +73,11 @@
 								</div>
 
 								<div class="dropdown-item cursor-pointer">
-									<div class="me-3">
-										<img src="{% static 'main_app/img/users/face3.jpg' %}" class="w-32px h-32px rounded-pill" alt="">
-									</div>
-
-									<div class="d-flex flex-column flex-grow-1">
-										<div class="fw-semibold">Christ<mark>in</mark>e Johnson</div>
-										<span class="fs-sm text-muted">c.johnson@awesomecorp.com</span>
-									</div>
-
-									<div class="d-inline-flex">
-										<a href="#" class="text-body ms-2">
-											<i class="ph-user-circle"></i>
-										</a>
-									</div>
+									
 								</div>
 
 								<div class="dropdown-item cursor-pointer">
-									<div class="me-3">
-										<img src="{% static 'main_app/img/users/face24.jpg' %}" class="w-32px h-32px rounded-pill" alt="">
-									</div>
 
-									<div class="d-flex flex-column flex-grow-1">
-										<div class="fw-semibold">Cl<mark>in</mark>ton Sparks</div>
-										<span class="fs-sm text-muted">c.sparks@awesomecorp.com</span>
-									</div>
-
-									<div class="d-inline-flex">
-										<a href="#" class="text-body ms-2">
-											<i class="ph-user-circle"></i>
-										</a>
-									</div>
 								</div>
 
 								<div class="dropdown-divider"></div>
@@ -117,54 +91,15 @@
 								</div>
 
 								<div class="dropdown-item cursor-pointer">
-									<div class="me-3">
-										<img src="{% static 'main_app/img/brands/adobe.svg' %}" class="w-32px h-32px rounded-pill" alt="">
-									</div>
-
-									<div class="d-flex flex-column flex-grow-1">
-										<div class="fw-semibold">Adobe <mark>In</mark>c.</div>
-										<span class="fs-sm text-muted">Enterprise license</span>
-									</div>
-
-									<div class="d-inline-flex">
-										<a href="#" class="text-body ms-2">
-											<i class="ph-briefcase"></i>
-										</a>
-									</div>
+									
 								</div>
 
 								<div class="dropdown-item cursor-pointer">
-									<div class="me-3">
-										<img src="{% static 'main_app/img/brands/holiday-inn.svg' %}" class="w-32px h-32px rounded-pill" alt="">
-									</div>
-
-									<div class="d-flex flex-column flex-grow-1">
-										<div class="fw-semibold">Holiday-<mark>In</mark>n</div>
-										<span class="fs-sm text-muted">On-premise license</span>
-									</div>
-
-									<div class="d-inline-flex">
-										<a href="#" class="text-body ms-2">
-											<i class="ph-briefcase"></i>
-										</a>
-									</div>
+									
 								</div>
 
 								<div class="dropdown-item cursor-pointer">
-									<div class="me-3">
-										<img src="{% static 'main_app/img/brands/ing.svg' %}" class="w-32px h-32px rounded-pill" alt="">
-									</div>
-
-									<div class="d-flex flex-column flex-grow-1">
-										<div class="fw-semibold"><mark>IN</mark>G Group</div>
-										<span class="fs-sm text-muted">Perpetual license</span>
-									</div>
-
-									<div class="d-inline-flex">
-										<a href="#" class="text-body ms-2">
-											<i class="ph-briefcase"></i>
-										</a>
-									</div>
+									
 								</div>
 							</div>
 						</div>
@@ -501,9 +436,7 @@
 						<li class="nav-item">
 							<a href="{% url 'clients' %}" class="nav-link">
 								<i class="ph-chalkboard-teacher"></i>
-								<span>
-									Clients
-								</span>
+								<span>Clients</span>
 							</a>
 						</li>
 
@@ -517,14 +450,14 @@
 						<li class="nav-item">
 							<a href="{% url 'project_list_reports' %}" class="nav-link">
 								<i class="ph-file-text"></i>
-								Reports
+								<span>Reports</span>
 							</a>
 						</li>
 
 						<li class="nav-item">
 							<a href="{% url 'tag_list' %}" class="nav-link">
 								<i class="ph-tag"></i>
-								Tags
+								<span>Tags</span>
 							</a>
 						</li>
 
@@ -801,7 +734,7 @@
     <script src="{% static 'main_app/js/index_js/jquery.min.js' %}"></script>
 	<script src="{% static 'main_app/js/dashboard/dashboard.js' %}"></script>
 
-	<script src="{% static 'main_app/js/index_js/custom_links.js' %}"></script>
+	<script src="{% static 'main_app/js/index_js/custom_links.js' %}"></script> 
 
 	<script>
 		function updateTaskCount() {

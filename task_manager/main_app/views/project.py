@@ -179,18 +179,17 @@ def project_list(request):
     else:
         user_perm = Q(owner=user) | Q(members=user) | Q(assignee=user)
 
-        projects = Project.objects.filter(
-            user_perm &
-            ~Q(status__in=['archive', 'closed']) &
-            ~Q(folder__status='archive') &
-            Q(subfolder__isnull=True) 
-        ).distinct().order_by("id")
-
         sub_folders = Folder.objects.filter(
             user_perm &
             ~Q(status__in=['archive', 'closed']) &
             ~Q(parent_folder__status='archive') &
             Q(parent_folder__isnull=False)
+        ).distinct().order_by("id")
+
+        projects = Project.objects.filter(
+            user_perm &
+            ~Q(status__in=['archive', 'closed']) &
+            ~Q(folder__status='archive')
         ).distinct().order_by("id")
     
     for item in sub_folders:

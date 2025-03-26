@@ -58,13 +58,15 @@ var TaskManagerList = function () {
                 "new": 1,
                 "working": 2,
                 "done": 3,
-                "closed": 4
+                "closed": 4,
+                "pause": 5,
+                "archive": 6
             };
         
             return this.api().column(col, { order: 'index' }).nodes().map(function (td) {
                 // Извлекаем статус из класса элемента <span> с id="status-display-{{ act_item.id }}"
                 const statusClass = $(td).find('span').attr('class');
-                let status = 'closed';  // значение по умолчанию
+                let status = 'pause';  // значение по умолчанию
         
                 // Определяем статус по классу
                 if (statusClass.includes('bg-warning')) {
@@ -73,14 +75,16 @@ var TaskManagerList = function () {
                     status = 'working';
                 } else if (statusClass.includes('bg-success')) {
                     status = 'done';
-                } else if (statusClass.includes('bg-secondary')) {
+                } else if (statusClass.includes('bg-primary')) {
                     status = 'closed';
                 } else if (statusClass.includes('bg-dark')) {
                     status = 'pause';
+                } else if (statusClass.includes('bg-secondary')) {
+                    status = 'archive';
                 }
         
                 // Возвращаем порядок сортировки, основываясь на статусе
-                return statusOrder[status] || 6; // Если статус неизвестен, присваиваем больший индекс
+                return statusOrder[status] || 7; // Если статус неизвестен, присваиваем больший индекс
             });
         };
 
@@ -91,7 +95,7 @@ var TaskManagerList = function () {
             autoWidth: false,
             order: [
                 // Сортировка по статусу (главный критерий)
-                [getColumnIndexByHeader("Status"), "asc"], 
+                [getColumnIndexByHeader("Status"), "asc"],
                 // Сортировка по приоритету (второй критерий)
                 [getColumnIndexByHeader("Priority"), "asc"]
             ],

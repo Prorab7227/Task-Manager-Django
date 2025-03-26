@@ -58,7 +58,9 @@ var TaskManagerList = function () {
                 "new": 1,
                 "working": 2,
                 "done": 3,
-                "closed": 4
+                "closed": 4,
+                "pause": 5,
+                "archive": 6
             };
         
             return this.api().column(col, { order: 'index' }).nodes().map(function (td) {
@@ -80,7 +82,7 @@ var TaskManagerList = function () {
                 }
         
                 // Возвращаем порядок сортировки, основываясь на статусе
-                return statusOrder[status] || 6; // Если статус неизвестен, присваиваем больший индекс
+                return statusOrder[status] || 7; // Если статус неизвестен, присваиваем больший индекс
             });
         };
 
@@ -91,7 +93,7 @@ var TaskManagerList = function () {
             autoWidth: false,
             order: [
                 // Сортировка по статусу (главный критерий)
-                [getColumnIndexByHeader("Status"), "asc"], 
+                [getColumnIndexByHeader("Status"), "asc"],
                 // Сортировка по приоритету (второй критерий)
                 [getColumnIndexByHeader("Priority"), "asc"]
             ],
