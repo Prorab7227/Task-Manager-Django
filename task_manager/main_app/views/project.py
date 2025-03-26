@@ -126,8 +126,8 @@ def project_update_status(request, id):
 
 @login_required
 def project_list_all(request):
-    user = request.user
-    is_admin = user.is_superuser
+    request_user = request.user
+    is_admin = request_user.is_superuser
     
     if is_admin:
         projects = Project.objects.filter(
@@ -138,17 +138,16 @@ def project_list_all(request):
             Q(parent_folder__isnull=False)
         ).distinct().order_by("id")
     else:
-        user_perm = Q(owner=user) | Q(members=user) | Q(assignee=user)
-
-        projects = Project.objects.filter(
-            user_perm &
-            Q(subfolder__isnull=True)
-        ).distinct().order_by("id")
+        user_perm = Q(owner=request_user) | Q(members__in=[request_user]) | Q(assignee=request_user)
 
         sub_folders = Folder.objects.filter(
             user_perm &
             Q(parent_folder__isnull=False)
         ).distinct().order_by("id")
+
+        projects = Project.objects.filter(
+            user_perm
+        ).order_by("id")
     
     for item in sub_folders:
         item.type = 'subfolder'
@@ -184,7 +183,7 @@ def project_list(request):
             user_perm &
             ~Q(status__in=['archive', 'closed']) &
             ~Q(folder__status='archive') &
-            Q(subfolder__isnull=True)
+            Q(subfolder__isnull=True) 
         ).distinct().order_by("id")
 
         sub_folders = Folder.objects.filter(

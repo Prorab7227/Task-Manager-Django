@@ -131,7 +131,7 @@ class ProjectForm(forms.ModelForm):
         queryset=Tag.objects.all(),
         required=True,
         widget=forms.Select(attrs={'class': 'multiselect dropdown-toggle btn'}),
-        initial=get_default_tag
+        empty_label="-",
     )
 
 

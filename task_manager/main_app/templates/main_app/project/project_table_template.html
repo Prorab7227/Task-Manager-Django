@@ -1,3 +1,5 @@
+{% load static %}
+
 <table class="table tasks-list">
     <thead>
         <tr>
@@ -126,3 +128,112 @@
         {% endfor %}
     </tbody>
 </table>
+
+{% block import_js %}
+
+    <script>
+        function togglePriorityDropdown(act_itemId) {
+            var dropdown = document.getElementById("priority-dropdown-" + act_itemId);
+            var currentPriority = document.getElementById("priority-display-" + act_itemId);
+        
+            // Toggle visibility of the dropdown
+            dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+        
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!currentPriority.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.style.display = "none";
+                }
+            });
+        }
+        
+        function selectPriority(act_itemId, newPriority, type) {
+            var url = type === 'project' 
+                ? "{% url 'project_update_priority' 0 %}".replace('0', act_itemId) 
+                : "{% url 'folder_update_priority' 0 %}".replace('0', act_itemId);
+        
+            // Send AJAX request to update the priority
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    'priority': newPriority,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function(response) {
+                    // Update the displayed priority text and badge class
+                    var priorityDisplay = document.getElementById("priority-display-" + act_itemId);
+                    priorityDisplay.innerHTML = newPriority.charAt(0).toUpperCase() + newPriority.slice(1);
+                    priorityDisplay.className = "badge " + getPriorityClass(newPriority);
+        
+                    var dropdown = document.getElementById("priority-dropdown-" + act_itemId);
+                    dropdown.style.display = "none";
+                }
+            });
+        }
+        
+        function getPriorityClass(priority) {
+            switch(priority) {
+                case 'low': return 'bg-success bg-opacity-20 text-success';
+                case 'regular': return 'bg-info bg-opacity-20 text-info';
+                case 'high': return 'bg-danger bg-opacity-20 text-danger';
+                default: return 'bg-secondary bg-opacity-20 text-secondary';
+            }
+        }
+    </script>
+
+    <script>
+        function toggleDropdown(act_itemId) {
+            var dropdown = document.getElementById("status-dropdown-" + act_itemId);
+            var currentStatus = document.getElementById("status-display-" + act_itemId);
+    
+            // Toggle visibility of the dropdown
+            dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+    
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!currentStatus.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.style.display = "none";
+                }
+            });
+        }
+    
+        function selectStatus(act_itemId, newStatus, type) {
+            var url = type === 'project' 
+                ? "{% url 'project_update_status' 0 %}".replace('0', act_itemId) 
+                : "{% url 'folder_update_status' 0 %}".replace('0', act_itemId);
+    
+            // Send AJAX request to update the status
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    'status': newStatus,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function(response) {
+                    // Update the displayed status text and badge class
+                    var statusDisplay = document.getElementById("status-display-" + act_itemId);
+                    statusDisplay.innerHTML = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                    statusDisplay.className = "badge " + getStatusClass(newStatus);
+    
+                    var dropdown = document.getElementById("status-dropdown-" + act_itemId);
+                    dropdown.style.display = "none";
+                }
+            });
+        }
+    
+        function getStatusClass(status) {
+            switch(status) {
+                case 'pause': return 'bg-dark bg-opacity-20 text-dark';
+                case 'new': return 'bg-warning bg-opacity-20 text-warning';
+                case 'working': return 'bg-info bg-opacity-20 text-info';
+                case 'done': return 'bg-success bg-opacity-20 text-success';
+                case 'closed': return 'bg-primary bg-opacity-20 text-primary';
+                case 'archive': return 'bg-secondary bg-opacity-20 text-secondary';
+                default: return '';
+            }
+        }
+    </script>
+
+{% endblock import_js %}
